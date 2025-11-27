@@ -1,0 +1,36 @@
+name: budget_for_retirement
+description: Budget for Retirement
+
+publish_to: "none" # WARNING: Removing this could publish to pub.dev.
+
+version: 1.0.0+2
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  desktop_window: ^0.4.0
+  cupertino_icons: ^1.0.8
+  fl_chart: ^1.0.0
+  intl: ^0.20.2
+  path: ^1.9.0
+  provider: ^6.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+
+flutter_launcher_icons:
+  android: false
+  ios: true
+  remove_alpha_ios: true
+  image_path: "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png"
