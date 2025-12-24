@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:budget_for_retirement/model/simulation_state_machine.dart';
 import 'package:budget_for_retirement/model/user_specified_parameters.dart';
 import 'package:budget_for_retirement/util/config_loader.dart';
@@ -7,7 +10,8 @@ void main() {
   late SimulationDefaults defaults;
 
   setUpAll(() async {
-    defaults = await ConfigLoader(configPath: 'config.json').load();
+    final raw = await File('config.json').readAsString();
+    defaults = SimulationDefaults.fromJson(jsonDecode(raw));
   });
 
   group('LifeEvents', () {

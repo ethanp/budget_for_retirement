@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:desktop_window/desktop_window.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,14 +8,8 @@ import 'util/config_loader.dart';
 import 'widgets/config_error_screen.dart';
 import 'widgets/home_page.dart';
 
-const double _MinWidth = 1370;
-const double _MinHeight = 834;
-const _MinReasonableSize = Size(_MinWidth, _MinHeight);
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  if (Platform.isMacOS) await DesktopWindow.setWindowSize(_MinReasonableSize);
 
   runApp(
     ChangeNotifierProvider(

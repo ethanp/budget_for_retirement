@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:path/path.dart' as path;
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'config_metadata.dart';
 
@@ -15,72 +14,27 @@ class ConfigLoadException implements Exception {
 }
 
 class ConfigLoader {
-  ConfigLoader({String? configPath}) : _explicitPath = configPath;
-
-  final String? _explicitPath;
-
   Future<SimulationDefaults> load() async {
-    final configFile = await _resolveConfigFile();
-    if (configFile == null) {
-      throw ConfigLoadException('Missing config.json.');
+    late final String raw;
+    try {
+      raw = await rootBundle.loadString('config.json');
+    } catch (e) {
+      throw ConfigLoadException('Missing config.json: $e');
     }
 
-    final raw = await configFile.readAsString();
     late final Map<String, dynamic> parsed;
-
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! Map<String, dynamic>) {
-        throw ConfigLoadException(
-            '${configFile.path} must contain a JSON object.');
+        throw ConfigLoadException('config.json must contain a JSON object.');
       }
       parsed = decoded;
     } on FormatException catch (error) {
       throw ConfigLoadException(
-        'Unable to parse ${configFile.path}: ${error.message}',
-      );
+          'Unable to parse config.json: ${error.message}');
     }
 
     return SimulationDefaults.fromJson(parsed);
-  }
-
-  Future<File?> _resolveConfigFile() async {
-    // Use explicit path if provided
-    final explicitPath = _explicitPath;
-    if (explicitPath != null) {
-      final file = File(explicitPath);
-      return await file.exists() ? file : null;
-    }
-
-    // Search in common locations
-    final candidates = [
-      'config.json',
-      _configPathFromExecutable(),
-      // Hardcoded fallback for iOS simulator development
-      '/Users/Ethan/code/my-code/since-google/Flutter/budget_for_retirement/config.json',
-    ].whereType<String>();
-
-    for (final candidate in candidates) {
-      final file = File(candidate);
-      if (await file.exists()) return file;
-    }
-    return null;
-  }
-
-  /// For macOS desktop builds, find config.json relative to the executable.
-  String? _configPathFromExecutable() {
-    try {
-      final exePath = Platform.resolvedExecutable;
-      // macOS: .../budget_for_retirement.app/Contents/MacOS/budget_for_retirement
-      // Walk up to find the project root (where config.json lives)
-      var dir = Directory(path.dirname(exePath));
-      for (var i = 0; i < 6; i++) {
-        final configPath = path.join(dir.path, 'config.json');
-        if (File(configPath).existsSync()) return configPath;
-        dir = dir.parent;
-      }
-    } catch (_) {}
-    return null;
   }
 }
 
