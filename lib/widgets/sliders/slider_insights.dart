@@ -1,6 +1,6 @@
 import 'package:budget_for_retirement/model/financial_simulation.dart';
+import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/widgets/insights/insight_metrics.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SliderInsights extends StatelessWidget {
@@ -8,6 +8,7 @@ class SliderInsights extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
     final simulation = FinancialSimulation.watchFrom(context);
     final minRetirementData = buildMinRetirementInsightData(simulation);
     final netWorthData = buildNetWorthInsightData(simulation);
@@ -15,8 +16,9 @@ class SliderInsights extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surfaceAccent,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colors.borderDepth1, width: 0.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(.08),
@@ -25,47 +27,44 @@ class SliderInsights extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
       child: Row(
         children: [
           Expanded(
             child: _InsightTile(
-              label: 'Min retirement age',
+              label: 'Min retire',
               value: minRetirementData.displayValue,
               valueColor: minRetirementData.color,
-              icon: CupertinoIcons.person_badge_plus,
             ),
           ),
-          Container(
-            width: 1,
-            height: 48,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            color: Colors.grey[200],
-          ),
+          _divider(context),
           Expanded(
             child: _InsightTile(
-              label: 'Net worth at death',
-              value: netWorthData.displayValue,
-              valueColor: netWorthData.color,
-              icon: CupertinoIcons.money_dollar_circle,
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 48,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            color: Colors.grey[200],
-          ),
-          Expanded(
-            child: _InsightTile(
-              label: 'Net worth at 45',
+              label: 'At 45',
               value: netWorthAt45Data.displayValue,
               valueColor: netWorthAt45Data.color,
-              icon: CupertinoIcons.calendar,
+            ),
+          ),
+          _divider(context),
+          Expanded(
+            child: _InsightTile(
+              label: 'At death',
+              value: netWorthData.displayValue,
+              valueColor: netWorthData.color,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _divider(BuildContext context) {
+    final colors = AppColors.of(context);
+    return Container(
+      width: 1,
+      height: 32,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      color: colors.borderDepth1,
     );
   }
 }
@@ -75,42 +74,32 @@ class _InsightTile extends StatelessWidget {
     required this.label,
     required this.value,
     required this.valueColor,
-    required this.icon,
   });
 
   final String label;
   final String value;
   final Color valueColor;
-  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final colors = AppColors.of(context);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Icon(icon, size: 18, color: Colors.grey[700]),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                label,
-                style: textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: colors.textColor1,
+          ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 2),
         Text(
           value,
-          style: textTheme.headlineSmall?.copyWith(
+          style: TextStyle(
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: valueColor,
           ),

@@ -1,5 +1,6 @@
 import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/model/user_specified_parameters.dart';
+import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/util/extensions.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,7 @@ class SlidersListView extends StatelessWidget {
   static Widget _headerButtonText(String text) {
     return Text(
       text,
-      style: TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 20,
-      ),
+      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
     );
   }
 
@@ -45,7 +43,7 @@ class SlidersListView extends StatelessWidget {
       title: 'Career',
       children: [
         ...jobs,
-        Card(
+        _ThemedCard(
           child: Column(children: [
             _lifetimeSlider(
               params,
@@ -83,7 +81,7 @@ class SlidersListView extends StatelessWidget {
   static _SliderGroup _childrenGroup(FinancialSimulation simulation) {
     final params = simulation.sliderPositions;
     final removeChildButton = _SliderGroupTitleButton(
-      color: Colors.red,
+      isAdd: false,
       child: _headerButtonText('–'),
       onTap: () {
         params.children.removeOne();
@@ -91,7 +89,7 @@ class SlidersListView extends StatelessWidget {
       },
     );
     final addChildButton = _SliderGroupTitleButton(
-      color: Colors.green,
+      isAdd: true,
       child: _headerButtonText('+'),
       onTap: () {
         if (params.children.count < 5) {
@@ -127,8 +125,7 @@ class SlidersListView extends StatelessWidget {
                   _ResidenceSlider(residence, idx, simulation))
               .toList());
 
-  static _SliderGroup _lifestyleGroup(
-      UserSpecifiedParameters simulationParams) {
+  static _SliderGroup _lifestyleGroup(UserSpecifiedParameters simulationParams) {
     return _SliderGroup(title: 'Lifestyle', children: [
       ArgSlider(
         title: 'Non-food / mo',
@@ -148,15 +145,12 @@ class SlidersListView extends StatelessWidget {
         title: 'Retirement savings \$/yr (target)',
         slidableValue: simulationParams.retirementInvestmentsPerAnnumTarget,
         maximum: 33e3,
-        metadata:
-            simulationParams.metadataFor('retirementInvestmentsPerAnnumTarget'),
+        metadata: simulationParams.metadataFor('retirementInvestmentsPerAnnumTarget'),
       ),
     ]);
   }
 
-  static Widget _circumstanceGroup(
-    UserSpecifiedParameters simulationParams,
-  ) {
+  static Widget _circumstanceGroup(UserSpecifiedParameters simulationParams) {
     return _SliderGroup(title: 'Circumstance', children: [
       ArgSlider(
         title: '(real) Investment returns',
@@ -183,6 +177,21 @@ class SlidersListView extends StatelessWidget {
   }
 }
 
+class _ThemedCard extends StatelessWidget {
+  const _ThemedCard({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    return Card(
+      color: colors.backgroundDepth2,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      child: child,
+    );
+  }
+}
+
 class _SliderGroup extends StatelessWidget {
   const _SliderGroup({
     required this.title,
@@ -201,30 +210,27 @@ class _SliderGroup extends StatelessWidget {
       child: ListView(
         shrinkWrap: true,
         physics: ClampingScrollPhysics(),
-        children: [_header, ...children],
+        children: [_header(context), ...children],
       ),
     );
   }
 
-  Widget get _header {
+  Widget _header(BuildContext context) {
+    final colors = AppColors.of(context);
     return Container(
-      color: Colors.grey[300],
+      color: colors.backgroundDepth3,
       child: Padding(
-        padding: const EdgeInsets.only(
-          top: 6,
-          bottom: 4,
-          left: 6,
-          right: 10,
-        ),
+        padding: const EdgeInsets.only(top: 6, bottom: 4, left: 6, right: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [_titleText, Row(children: headers)],
+          children: [_titleText(context), Row(children: headers)],
         ),
       ),
     );
   }
 
-  Widget get _titleText {
+  Widget _titleText(BuildContext context) {
+    final colors = AppColors.of(context);
     return Padding(
       padding: const EdgeInsets.only(left: 2, right: 10),
       child: Text(
@@ -232,7 +238,7 @@ class _SliderGroup extends StatelessWidget {
         style: TextStyle(
           fontSize: 19,
           fontWeight: FontWeight.w700,
-          color: Colors.grey[900]!.withRed(90),
+          color: colors.textColor1,
         ),
       ),
     );
@@ -243,24 +249,27 @@ class _SliderGroupTitleButton extends StatelessWidget {
   const _SliderGroupTitleButton({
     required this.onTap,
     required this.child,
-    required this.color,
+    required this.isAdd,
   });
 
   final VoidCallback? onTap;
   final Widget child;
-  final Color color;
+  final bool isAdd;
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    final buttonColor = isAdd ? colors.successColor : colors.dangerColor;
     return ElevatedButton(
       onPressed: onTap,
-      child: child,
       style: ElevatedButton.styleFrom(
-        backgroundColor: color.lerpWith(Colors.grey, .4),
+        backgroundColor: buttonColor.withOpacity(0.7),
+        foregroundColor: colors.textColor1,
         minimumSize: const Size(32, 32),
         maximumSize: const Size(32, 32),
         padding: const EdgeInsets.only(left: 6, right: 5, top: 3, bottom: 8),
       ),
+      child: child,
     );
   }
 }
@@ -274,22 +283,24 @@ class _ResidenceContractTypeSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
     final simulation = FinancialSimulation.watchFrom(context);
-    final typeSwitch = Switch(
-      value: isSwitchedOn,
-      activeTrackColor: Colors.orange.withValues(alpha: .8).withBlue(130),
-      inactiveTrackColor: Colors.green[800]!.withValues(alpha: .75),
-      thumbColor: WidgetStatePropertyAll(Colors.green[700]
-          .lerpWith(Colors.blueGrey, .6)
-          .lerpWith(Colors.black, .5)),
-      onChanged: (isRent) {
-        residence.updateType(isRent);
-        simulation.run();
-      },
+    final typeSwitch = Transform.scale(
+      scale: 0.7,
+      child: Switch(
+        value: isSwitchedOn,
+        activeTrackColor: colors.accentSecondary,
+        inactiveTrackColor: colors.accentTertiary,
+        thumbColor: WidgetStatePropertyAll(colors.accentPrimary),
+        onChanged: (isRent) {
+          residence.updateType(isRent);
+          simulation.run();
+        },
+      ),
     );
 
-    final onStyle = TextStyle(fontWeight: FontWeight.w700);
-    final offStyle = TextStyle(fontWeight: FontWeight.w300, color: Colors.grey);
+    final onStyle = TextStyle(fontWeight: FontWeight.w700, color: colors.textColor1, fontSize: 13);
+    final offStyle = TextStyle(fontWeight: FontWeight.w300, color: colors.textColor3, fontSize: 13);
 
     final ownLabel = Text('Own', style: isSwitchedOn ? offStyle : onStyle);
     final rentLabel = Text('Rent', style: isSwitchedOn ? onStyle : offStyle);
@@ -308,8 +319,7 @@ class _Jobs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserSpecifiedParameters simulationParams = simulation.sliderPositions;
-    final Widget startDateSlider =
-        _lifetimeSlider(simulationParams, 'Age hired', job.age);
+    final Widget startDateSlider = _lifetimeSlider(simulationParams, 'Age hired', job.age);
     final Widget salarySlider = ArgSlider(
       title: 'Starting salary',
       slidableValue: job.salary,
@@ -318,22 +328,21 @@ class _Jobs extends StatelessWidget {
     );
     return Column(
       children: [
-        Card(
-          margin: EdgeInsets.symmetric(horizontal: 4),
+        _ThemedCard(
           child: Column(children: [
-            _topRow(simulationParams),
-            // First job MUST be at the simulation's start time (for simplicity).
+            _topRow(context, simulationParams),
             if (idx > 0) startDateSlider,
             salarySlider,
           ]),
         ),
-        _addButton(simulationParams),
+        _addButton(context, simulationParams),
       ],
     );
   }
 
-  Widget _addButton(UserSpecifiedParameters simulationParams) {
+  Widget _addButton(BuildContext context, UserSpecifiedParameters simulationParams) {
     return _Button.pipedAdd(
+      context: context,
       suffix: 'job',
       onPressed: () {
         if (simulationParams.jobs.listInOrder.length < 9) {
@@ -344,30 +353,31 @@ class _Jobs extends StatelessWidget {
     );
   }
 
-  Widget _topRow(UserSpecifiedParameters simulationParams) {
+  Widget _topRow(BuildContext context, UserSpecifiedParameters simulationParams) {
+    final colors = AppColors.of(context);
     final number = idx == 0 ? 'Preexisting' : '${ith(place: idx + 1)}';
     final Widget deleteButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: _Button.delete(onPressed: () {
-        simulationParams.jobs.remove(job);
-        simulation.run();
-      }),
+      child: _Button.delete(
+        context: context,
+        onPressed: () {
+          simulationParams.jobs.remove(job);
+          simulation.run();
+        },
+      ),
     );
     return Padding(
       padding: const EdgeInsets.all(8).copyWith(bottom: 2),
-      // The Row is here to left-align the text
       child: Row(children: [
         Text(
-          number + ' job',
+          '$number job',
           style: TextStyle(
-            color: Colors.blueGrey[700],
+            color: colors.accentSecondary,
             fontStyle: FontStyle.italic,
             fontWeight: FontWeight.w800,
             fontSize: 15,
           ),
         ),
-
-        // 1st job cannot be deleted (for simplicity).
         if (idx > 0) deleteButton,
       ]),
     );
@@ -383,6 +393,7 @@ class _ResidenceSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
     final UserSpecifiedParameters params = simulation.sliderPositions;
     final PrimaryResidences residences = params.primaryResidences;
 
@@ -391,7 +402,7 @@ class _ResidenceSlider extends StatelessWidget {
       child: Text(
         idx == 0 ? 'Preexisting' : ith(place: idx + 1),
         style: TextStyle(
-          color: Colors.blueGrey[700],
+          color: colors.accentSecondary,
           fontStyle: FontStyle.italic,
           fontWeight: FontWeight.w800,
         ),
@@ -406,12 +417,14 @@ class _ResidenceSlider extends StatelessWidget {
             ithTitle,
             _ResidenceContractTypeSwitch(residence),
           ]),
-          // For simplicity, user cannot delete first residence.
           if (idx > 0)
-            _Button.delete(onPressed: () {
-              residences.remove(residence);
-              simulation.run();
-            }),
+            _Button.delete(
+              context: context,
+              onPressed: () {
+                residences.remove(residence);
+                simulation.run();
+              },
+            ),
         ],
       ),
     );
@@ -465,6 +478,7 @@ class _ResidenceSlider extends StatelessWidget {
       maximum: 7,
     );
     final Widget addResidenceButton = _Button.pipedAdd(
+      context: context,
       suffix: 'residence',
       onPressed: () {
         if (residences.listInOrder.length < 5) {
@@ -473,8 +487,7 @@ class _ResidenceSlider extends StatelessWidget {
         }
       },
     );
-    final Widget residenceSliders = Card(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
+    final Widget residenceSliders = _ThemedCard(
       child: Column(children: [
         topRow,
         ageSlider,
@@ -496,7 +509,6 @@ class _ResidenceSlider extends StatelessWidget {
   }
 }
 
-/// Creates an [ArgSlider] restricted to values within the user's lifetime.
 Widget _lifetimeSlider(
   UserSpecifiedParameters simulationParams,
   String title,
@@ -515,64 +527,89 @@ Widget _lifetimeSlider(
 
 class _Button {
   static Widget pipedAdd({
+    required BuildContext context,
     required String suffix,
     required VoidCallback onPressed,
   }) {
+    final colors = AppColors.of(context);
     return _piped(
+      context,
       _button(
+        context: context,
         text: 'Add a $suffix',
-        foreground: Colors.green[700],
-        background: Colors.grey[100].lerpWith(Colors.lightGreenAccent, .15),
+        foreground: colors.successColor,
+        background: colors.backgroundDepth2,
         onPressed: onPressed,
       ),
     );
   }
 
-  static Widget delete({required VoidCallback onPressed}) {
+  static Widget delete({
+    required BuildContext context,
+    required VoidCallback onPressed,
+  }) {
+    final colors = AppColors.of(context);
     return _button(
+      context: context,
       text: 'Delete',
-      foreground: Colors.red[900],
-      background: Colors.grey[100].lerpWith(Colors.pink, .10),
+      foreground: colors.dangerColor,
+      background: colors.backgroundDepth2,
       onPressed: onPressed,
     );
   }
 
-  static final Widget _pipeLine = Container(
-    height: 10,
-    width: 8,
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [
-          Colors.grey[600]!, // Dark edge
-          Colors.grey[500]!, // Mid-tone
-          Colors.grey[200]!, // Highlight
-          Colors.grey[500]!, // Mid-tone
-          Colors.grey[700]!, // Dark edge
-        ],
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-        stops: [0.0, 0.25, 0.5, 0.75, 1.0],
+  static Widget _pipeLine(BuildContext context) {
+    final colors = AppColors.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      height: 10,
+      width: 8,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark
+              ? [
+                  colors.backgroundDepth4,
+                  colors.backgroundDepth3,
+                  colors.backgroundDepth5,
+                  colors.backgroundDepth3,
+                  colors.backgroundDepth4,
+                ]
+              : [
+                  colors.borderDepth1,
+                  colors.backgroundDepth4,
+                  colors.backgroundDepth2,
+                  colors.backgroundDepth4,
+                  colors.borderDepth1,
+                ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          stops: [0.0, 0.25, 0.5, 0.75, 1.0],
+        ),
       ),
-    ),
-  );
+    );
+  }
 
-  static Widget _piped(Widget w) => Column(children: [_pipeLine, w, _pipeLine]);
+  static Widget _piped(BuildContext context, Widget w) =>
+      Column(children: [_pipeLine(context), w, _pipeLine(context)]);
 
   static Widget _button({
+    required BuildContext context,
     required String text,
-    required Color? foreground,
+    required Color foreground,
     required Color background,
     required VoidCallback onPressed,
   }) {
+    final colors = AppColors.of(context);
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         foregroundColor: foreground,
         backgroundColor: background,
-        elevation: .2,
+        side: BorderSide(color: colors.borderDepth2),
+        elevation: 0,
         padding: EdgeInsets.symmetric(horizontal: 12),
       ),
-      child: Text(text, style: TextStyle(fontSize: 12)),
       onPressed: onPressed,
+      child: Text(text, style: TextStyle(fontSize: 12)),
     );
   }
 }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'model/financial_simulation.dart';
+import 'theme/app_theme.dart';
+import 'theme/theme_notifier.dart';
 import 'util/config_loader.dart';
 import 'widgets/config_error_screen.dart';
 import 'widgets/home_page.dart';
@@ -16,10 +18,14 @@ const _MinReasonableSize = Size(_MinWidth, _MinHeight);
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // So far, it doesn't seem to work to call this *after* calling runApp() :(
   if (Platform.isMacOS) await DesktopWindow.setWindowSize(_MinReasonableSize);
 
-  runApp(AppWidget());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeNotifier(),
+      child: AppWidget(),
+    ),
+  );
 }
 
 class AppWidget extends StatelessWidget {
@@ -29,6 +35,8 @@ class AppWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = context.watch<ThemeNotifier>();
+
     return FutureBuilder<SimulationDefaults>(
       future: _loader.load(),
       builder: (context, snapshot) {
@@ -41,18 +49,17 @@ class AppWidget extends StatelessWidget {
           );
         } else {
           final defaults = snapshot.requireData;
-          home = MultiProvider(
-            providers: [
-              ChangeNotifierProvider(
-                create: (_) => FinancialSimulation(defaults: defaults),
-              ),
-            ],
+          home = ChangeNotifierProvider(
+            create: (_) => FinancialSimulation(defaults: defaults),
             child: HomePage(),
           );
         }
 
         return MaterialApp(
-          title: 'Finances Simulator',
+          title: 'Retirement Planner',
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: themeNotifier.themeMode,
           home: home,
           debugShowCheckedModeBanner: false,
         );

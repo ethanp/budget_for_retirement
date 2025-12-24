@@ -28,6 +28,11 @@ class NetWorthInsightData {
   final double value;
 }
 
+// Colors that work well in both light and dark themes
+const _successColor = Color(0xFF00A896);
+const _dangerColor = Color(0xFFE57373);
+const _neutralColor = Color(0xFF78909C);
+
 MinRetirementInsightData buildMinRetirementInsightData(
   FinancialSimulation simulation,
 ) {
@@ -35,8 +40,7 @@ MinRetirementInsightData buildMinRetirementInsightData(
   final int death = simulation.sliderPositions.ageAtDeath.now;
   final bool canStopWorking = minRetirementAge < death;
   final String text = canStopWorking ? '$minRetirementAge' : 'Never';
-  final Color color =
-      canStopWorking ? Colors.green.shade700 : Colors.red.shade700;
+  final Color color = canStopWorking ? _successColor : _dangerColor;
 
   return MinRetirementInsightData(
     displayValue: text,
@@ -51,8 +55,7 @@ NetWorthInsightData buildNetWorthInsightData(
   final double finalSavings =
       simulation.latestData.netSavings.dataPoints.last.y;
   final bool dieWithSavings = finalSavings >= 0;
-  final Color color =
-      dieWithSavings ? Colors.green.shade700 : Colors.red.shade700;
+  final Color color = dieWithSavings ? _successColor : _dangerColor;
   final String finalCurrency = finalSavings.asCompactDollars();
 
   return NetWorthInsightData(
@@ -72,7 +75,7 @@ NetWorthInsightData buildNetWorthAtAge45InsightData(
   if (targetAge < startingAge) {
     return NetWorthInsightData(
       displayValue: 'N/A',
-      color: Colors.grey.shade700,
+      color: _neutralColor,
       hasPositiveNetWorth: false,
       value: 0,
     );
@@ -85,7 +88,7 @@ NetWorthInsightData buildNetWorthAtAge45InsightData(
 
   final double netWorth = dataPoint.y;
   final bool isPositive = netWorth >= 0;
-  final Color color = isPositive ? Colors.green.shade700 : Colors.red.shade700;
+  final Color color = isPositive ? _successColor : _dangerColor;
   final String displayCurrency = netWorth.asCompactDollars();
 
   return NetWorthInsightData(
