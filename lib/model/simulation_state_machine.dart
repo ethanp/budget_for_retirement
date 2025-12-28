@@ -92,16 +92,25 @@ class SimulationStateMachine {
 
     // Traditional 401k contributions are pre-tax (reduce taxable income).
     double traditionalContribution = 0;
+    double taxableIncome = incomeRemaining;
     if (!lifeEvents.isRetired && nonMortgageDebt.isEmpty) {
       traditionalContribution = math.min(
         traditionalRetirement.perAnnumTarget,
         incomeRemaining,
       );
       incomeRemaining -= traditionalContribution;
+      taxableIncome -= traditionalContribution;
     }
 
-    // Pay income taxes on remaining income (after Traditional contributions).
-    incomeRemaining = economy.effectiveIncomeTaxRate.takeFrom(incomeRemaining);
+    // Social Security is only 85% taxable for high-income retirees.
+    if (lifeEvents.isRetired &&
+        lifeEvents.currentAge >= Earnings.MinimumSocSecAge) {
+      taxableIncome = incomeRemaining * 0.85;
+    }
+
+    // Pay income taxes on taxable portion, subtract from spendable income.
+    final incomeTaxes = economy.effectiveIncomeTaxRate.of(taxableIncome);
+    incomeRemaining -= incomeTaxes;
 
     // Now add the Traditional contribution (it was already deducted pre-tax).
     traditionalRetirement.grossValue += traditionalContribution;
@@ -139,6 +148,19 @@ class SimulationStateMachine {
 
     // Squirrel away remaining salary into taxable investments.
     taxableInvestments.grossValue += incomeRemaining;
+
+    // Required Minimum Distributions (RMDs) from Traditional accounts at age 75+.
+    const rmdStartAge = 75;
+    if (lifeEvents.currentAge >= rmdStartAge &&
+        traditionalRetirement.grossValue > 0) {
+      // Simplified RMD formula: ~1/(remaining life expectancy)
+      final rmdPercent = 1.0 / (100 - lifeEvents.currentAge + 10);
+      final rmdAmount = traditionalRetirement.grossValue * rmdPercent;
+      traditionalRetirement.grossValue -= rmdAmount;
+      // RMD is taxed as ordinary income, remainder goes to taxable investments.
+      final afterTax = economy.effectiveIncomeTaxRate.takeFrom(rmdAmount);
+      taxableInvestments.grossValue += afterTax;
+    }
   }
 
   /// Tax-efficient withdrawal order:
