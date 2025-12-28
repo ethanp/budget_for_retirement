@@ -64,8 +64,14 @@ class Residences {
     // Housing costs are negative when house sold more than covers first-year
     // expenses for house bought.
     if (housingExpenses < 0) {
-      // We have to pay income taxes (IIRC, since it's not a 529 exchange).
-      return -effectiveIncomeTaxRate.takeFrom(-housingExpenses);
+      final gain = -housingExpenses;
+      // Primary residence gains up to $500K (married) are tax-free.
+      const exclusion = 500000.0;
+      final taxableGain = math.max(0.0, gain - exclusion);
+      // Tax excess gains at long-term capital gains rate (~15%).
+      const capitalGainsRate = 0.15;
+      final taxes = taxableGain * capitalGainsRate;
+      return -(gain - taxes);
     }
     return housingExpenses;
   }
