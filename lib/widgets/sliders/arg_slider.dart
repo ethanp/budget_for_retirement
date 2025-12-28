@@ -40,6 +40,19 @@ class ArgSlider extends StatelessWidget {
     );
   }
 
+  /// Creates an ArgSlider from a ListFieldDefinition and slidable value.
+  factory ArgSlider.fromListField(
+    ListFieldDefinition def,
+    SlidableSimulatorArg slidableValue,
+  ) {
+    return ArgSlider(
+      title: def.displayName,
+      slidableValue: slidableValue,
+      minimum: def.minimum,
+      maximum: def.maximum,
+    );
+  }
+
   final String title;
   final double minimum;
   final double maximum;

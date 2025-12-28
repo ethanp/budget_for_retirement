@@ -10,36 +10,66 @@ class ParamRegistry {
   // JOB FIELD DEFINITIONS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  static const jobAge =
-      ListFieldDefinition(displayName: 'Age hired', minimum: 16, maximum: 80);
+  static const jobAge = ListFieldDefinition(
+    displayName: 'Age hired',
+    minimum: 16,
+    maximum: 80,
+  );
   static const jobSalary = ListFieldDefinition(
-      displayName: 'Starting salary', minimum: 0, maximum: 700e3);
+    displayName: 'Starting salary',
+    minimum: 0,
+    maximum: 700e3,
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CHILD FIELD DEFINITIONS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  static const childBirthAge =
-      ListFieldDefinition(displayName: 'Birth age', minimum: 25, maximum: 55);
+  static const childBirthAge = ListFieldDefinition(
+    displayName: 'Birth age',
+    minimum: 25,
+    maximum: 55,
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // RESIDENCE FIELD DEFINITIONS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  static const residenceAge =
-      ListFieldDefinition(displayName: 'Age', minimum: 20, maximum: 95);
+  static const residenceAge = ListFieldDefinition(
+    displayName: 'Age',
+    minimum: 20,
+    maximum: 95,
+  );
   static const residenceDownPayment = ListFieldDefinition(
-      displayName: 'Down payment %', minimum: 0, maximum: 100);
+    displayName: 'Down payment %',
+    minimum: 0,
+    maximum: 100,
+  );
   static const residencePropertyTax = ListFieldDefinition(
-      displayName: 'Property tax %', minimum: 0.5, maximum: 4);
+    displayName: 'Property tax %',
+    minimum: 0.5,
+    maximum: 4,
+  );
   static const residenceInsurance = ListFieldDefinition(
-      displayName: 'Insurance \$/yr', minimum: 500, maximum: 10000);
-  static const residenceHoa =
-      ListFieldDefinition(displayName: 'HOA \$/yr', minimum: 0, maximum: 12000);
+    displayName: 'Insurance \$/yr',
+    minimum: 500,
+    maximum: 10000,
+  );
+  static const residenceHoa = ListFieldDefinition(
+    displayName: 'HOA \$/yr',
+    minimum: 0,
+    maximum: 12000,
+  );
   static const residenceMortgageApr = ListFieldDefinition(
-      displayName: 'Mortgage %APR', minimum: 2, maximum: 20);
+    displayName: 'Mortgage %APR',
+    minimum: 2,
+    maximum: 20,
+  );
   static const residenceAppreciation = ListFieldDefinition(
-      displayName: '(real) Housing appreciation', minimum: -5, maximum: 7);
+    displayName: '(real) Housing appreciation',
+    minimum: -5,
+    maximum: 7,
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CAREER PARAMETERS

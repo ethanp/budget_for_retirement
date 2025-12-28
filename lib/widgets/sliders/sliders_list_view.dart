@@ -92,8 +92,8 @@ class SlidersListView extends StatelessWidget {
         .withIdx((idx, v) => ArgSlider(
               title: '${ith(place: idx + 1)} child',
               slidableValue: v,
-              minimum: ParamRegistry.childBirthAge.minimum ?? 25,
-              maximum: ParamRegistry.childBirthAge.maximum ?? 55,
+              minimum: ParamRegistry.childBirthAge.minimum,
+              maximum: ParamRegistry.childBirthAge.maximum,
             ))
         .toList();
     return _SliderGroup(
@@ -283,12 +283,8 @@ class _Jobs extends StatelessWidget {
       ParamRegistry.jobAge.displayName,
       job.age,
     );
-    final Widget salarySlider = ArgSlider(
-      title: ParamRegistry.jobSalary.displayName,
-      slidableValue: job.salary,
-      minimum: ParamRegistry.jobSalary.minimum ?? 0,
-      maximum: ParamRegistry.jobSalary.maximum ?? 700e3,
-    );
+    final salarySlider =
+        ArgSlider.fromListField(ParamRegistry.jobSalary, job.salary);
     return Column(
       children: [
         _ThemedCard(
@@ -394,7 +390,7 @@ class _ResidenceSlider extends StatelessWidget {
     final Widget ageSlider = ArgSlider(
       title: ParamRegistry.residenceAge.displayName,
       slidableValue: residence.age,
-      minimum: ParamRegistry.residenceAge.minimum ?? 20,
+      minimum: ParamRegistry.residenceAge.minimum,
       maximum: idx > 0
           ? params.endAge.toDouble()
           : params.simulationStartingAge.toDouble(),
@@ -405,41 +401,18 @@ class _ResidenceSlider extends StatelessWidget {
       minimum: residence.contractType.now.minimum,
       maximum: residence.contractType.now.maximum,
     );
-    final Widget downPaymentSlider = ArgSlider(
-      title: ParamRegistry.residenceDownPayment.displayName,
-      maximum: ParamRegistry.residenceDownPayment.maximum ?? 100,
-      slidableValue: residence.downPayment,
-    );
-    final Widget taxRateSlider = ArgSlider(
-      title: ParamRegistry.residencePropertyTax.displayName,
-      minimum: ParamRegistry.residencePropertyTax.minimum ?? 0.5,
-      maximum: ParamRegistry.residencePropertyTax.maximum ?? 4,
-      slidableValue: residence.propertyTaxRate,
-    );
-    final Widget insuranceSlider = ArgSlider(
-      title: ParamRegistry.residenceInsurance.displayName,
-      minimum: ParamRegistry.residenceInsurance.minimum ?? 500,
-      maximum: ParamRegistry.residenceInsurance.maximum ?? 10000,
-      slidableValue: residence.insurancePrice,
-    );
-    final Widget hoaSlider = ArgSlider(
-      title: ParamRegistry.residenceHoa.displayName,
-      minimum: ParamRegistry.residenceHoa.minimum ?? 0,
-      maximum: ParamRegistry.residenceHoa.maximum ?? 12000,
-      slidableValue: residence.hoaPrice,
-    );
-    final Widget mortgageAprSlider = ArgSlider(
-      title: ParamRegistry.residenceMortgageApr.displayName,
-      minimum: ParamRegistry.residenceMortgageApr.minimum ?? 2,
-      maximum: ParamRegistry.residenceMortgageApr.maximum ?? 20,
-      slidableValue: residence.mortgageApr,
-    );
-    final Widget appreciationSlider = ArgSlider(
-      title: ParamRegistry.residenceAppreciation.displayName,
-      slidableValue: residence.housingAppreciateRate,
-      minimum: ParamRegistry.residenceAppreciation.minimum ?? -5,
-      maximum: ParamRegistry.residenceAppreciation.maximum ?? 7,
-    );
+    final downPaymentSlider = ArgSlider.fromListField(
+        ParamRegistry.residenceDownPayment, residence.downPayment);
+    final taxRateSlider = ArgSlider.fromListField(
+        ParamRegistry.residencePropertyTax, residence.propertyTaxRate);
+    final insuranceSlider = ArgSlider.fromListField(
+        ParamRegistry.residenceInsurance, residence.insurancePrice);
+    final hoaSlider =
+        ArgSlider.fromListField(ParamRegistry.residenceHoa, residence.hoaPrice);
+    final mortgageAprSlider = ArgSlider.fromListField(
+        ParamRegistry.residenceMortgageApr, residence.mortgageApr);
+    final appreciationSlider = ArgSlider.fromListField(
+        ParamRegistry.residenceAppreciation, residence.housingAppreciateRate);
     final Widget addResidenceButton = _Button.pipedAdd(
       context: context,
       suffix: 'residence',

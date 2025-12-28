@@ -5,20 +5,7 @@ enum ParamType { int, double, percent, dollars, dollarMap, list }
 enum ParamCategory { career, children, residences, lifestyle, circumstance }
 
 extension ParamCategoryExt on ParamCategory {
-  String get displayName {
-    switch (this) {
-      case ParamCategory.career:
-        return 'Career';
-      case ParamCategory.children:
-        return 'Children';
-      case ParamCategory.residences:
-        return 'Residences';
-      case ParamCategory.lifestyle:
-        return 'Lifestyle';
-      case ParamCategory.circumstance:
-        return 'Circumstance';
-    }
-  }
+  String get displayName => name[0].toUpperCase() + name.substring(1);
 }
 
 class ParamDefinition<T> {
@@ -58,12 +45,12 @@ class ParamDefinition<T> {
 /// methods since new items inherit from previous items.
 class ListFieldDefinition {
   final String displayName;
-  final double? minimum;
-  final double? maximum;
+  final double minimum;
+  final double maximum;
 
   const ListFieldDefinition({
     required this.displayName,
-    this.minimum,
-    this.maximum,
+    required this.minimum,
+    required this.maximum,
   });
 }
