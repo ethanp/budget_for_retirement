@@ -2,30 +2,29 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:budget_for_retirement/model/retirement_accounts.dart';
+import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:budget_for_retirement/model/simulation_state_machine.dart';
-import 'package:budget_for_retirement/model/user_specified_parameters.dart';
-import 'package:budget_for_retirement/util/config_loader.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  late SimulationDefaults defaults;
+  late Map<String, dynamic> configJson;
 
   setUpAll(() async {
     final raw = await File('config.json').readAsString();
-    defaults = SimulationDefaults.fromJson(jsonDecode(raw));
+    configJson = jsonDecode(raw) as Map<String, dynamic>;
   });
 
   group('LifeEvents', () {
     test('Career should be finite', () {
       final simulation = SimulationStateMachine.createFrom(
-        UserSpecifiedParameters.fromDefaults(defaults),
+        SimulationParams.fromJson(configJson),
       );
       while (!simulation.lifeEvents.isRetired) simulation.advanceOneYear();
       expect(simulation.lifeEvents.isRetired, true);
     });
     test('Simulation should be finite', () {
       final simulation = SimulationStateMachine.createFrom(
-        UserSpecifiedParameters.fromDefaults(defaults),
+        SimulationParams.fromJson(configJson),
       );
       while (!simulation.lifeEvents.pastEndAge) simulation.advanceOneYear();
       expect(simulation.lifeEvents.pastEndAge, true);
@@ -35,7 +34,7 @@ void main() {
   group('Default path', () {
     test('Default path should be very financially safe', () {
       final simulation = SimulationStateMachine.createFrom(
-        UserSpecifiedParameters.fromDefaults(defaults),
+        SimulationParams.fromJson(configJson),
       );
       while (!simulation.lifeEvents.pastEndAge) simulation.advanceOneYear();
       expect(simulation.totalRetirementSavings, greaterThan(1e6));

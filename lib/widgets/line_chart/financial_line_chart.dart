@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:budget_for_retirement/model/financial_simulation.dart';
-import 'package:budget_for_retirement/model/user_specified_parameters.dart';
+import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:budget_for_retirement/util/extensions.dart';
 import 'package:budget_for_retirement/widgets/line_chart/line_builder.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -79,7 +79,7 @@ class FinancialLineChart extends StatelessWidget {
     );
   }
 
-  UserSpecifiedParameters _initialLifeState(BuildContext context) =>
+  SimulationParams _initialLifeState(BuildContext context) =>
       FinancialSimulation.dontWatch(context).sliderPositions;
 
   List<LineChartBarData> _lineData(BuildContext context) {

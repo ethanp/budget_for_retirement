@@ -1,18 +1,18 @@
-import 'package:budget_for_retirement/util/config_loader.dart';
 import 'package:budget_for_retirement/widgets/line_chart/lines_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'simulation_params.dart';
 import 'simulation_state_machine.dart';
-import 'user_specified_parameters.dart';
 
 class FinancialSimulation extends ChangeNotifier {
-  FinancialSimulation({required this.defaults}) {
+  FinancialSimulation({required this.configJson}) {
     reset();
   }
 
-  final SimulationDefaults defaults;
-  late UserSpecifiedParameters sliderPositions;
+  /// Raw JSON config, kept for reset functionality.
+  final Map<String, dynamic> configJson;
+  late SimulationParams sliderPositions;
   var latestData = LinesBuilder.empty();
 
   static FinancialSimulation dontWatch(BuildContext context) =>
@@ -21,9 +21,8 @@ class FinancialSimulation extends ChangeNotifier {
   static FinancialSimulation watchFrom(BuildContext context) =>
       context.watch<FinancialSimulation>();
 
-  // TODO call this from a button? I thought I had that....
   void reset() {
-    sliderPositions = UserSpecifiedParameters.fromDefaults(defaults);
+    sliderPositions = SimulationParams.fromJson(configJson);
     run();
   }
 

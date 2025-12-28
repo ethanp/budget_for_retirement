@@ -1,6 +1,6 @@
 import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/model/house_expenses.dart';
-import 'package:budget_for_retirement/model/user_specified_parameters.dart';
+import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/util/extensions.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
@@ -24,7 +24,7 @@ class _HousingCardState extends UnderChartCardState<HousingCard> {
   @override
   Widget content(BuildContext context) {
     final colors = AppColors.of(context);
-    final UserSpecifiedParameters sliders =
+    final SimulationParams sliders =
         FinancialSimulation.watchFrom(context).sliderPositions;
 
     final List<DataColumn> tableColumnHeaders = <String>[
@@ -62,7 +62,7 @@ class _HousingCardRowsBuilder {
   _HousingCardRowsBuilder(this.residence, this.sliders, this.colors);
 
   final PrimaryResidence residence;
-  final UserSpecifiedParameters sliders;
+  final SimulationParams sliders;
   final AppColors colors;
 
   List<DataRow> get build => [
@@ -89,7 +89,7 @@ class _HousingCardRowsBuilder {
 
   static const yearsOut = [0, 10, 20, 30, 50];
 
-  List<DataCell> _combinedRow(UserSpecifiedParameters sliders) {
+  List<DataCell> _combinedRow(SimulationParams sliders) {
     return [
       DataCell(Text(residence.age.toString(),
           style: TextStyle(color: colors.textColor1))),
@@ -112,7 +112,7 @@ class _HousingCardRowsBuilder {
 
   List<DataCell> _getARow(
     String title,
-    UserSpecifiedParameters sliders,
+    SimulationParams sliders,
     double Function(HouseExpenses) getField,
     PrimaryResidence residence,
   ) {
@@ -135,7 +135,7 @@ class _HousingCardRowsBuilder {
   }
 
   HouseExpenses _houseExpenses(
-    UserSpecifiedParameters sliderPositions,
+    SimulationParams sliderPositions,
     int yearsInHouse,
     PrimaryResidence residence,
   ) {

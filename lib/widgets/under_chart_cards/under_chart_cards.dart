@@ -126,8 +126,7 @@ class FinalGrossCard extends StatefulWidget {
 
 class _FinalGrossCardState extends UnderChartCardState<FinalGrossCard> {
   @override
-  Widget title(BuildContext context) =>
-      titleStyle(context, 'Net worth at 95');
+  Widget title(BuildContext context) => titleStyle(context, 'Net worth at 95');
 
   @override
   final bool expands = false;

@@ -1,5 +1,7 @@
 import 'package:budget_for_retirement/model/financial_simulation.dart';
-import 'package:budget_for_retirement/model/user_specified_parameters.dart';
+import 'package:budget_for_retirement/model/param_definition.dart';
+import 'package:budget_for_retirement/model/param_registry.dart';
+import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/util/extensions.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
@@ -34,7 +36,7 @@ class SlidersListView extends StatelessWidget {
       ];
 
   static _SliderGroup _careerGroup(FinancialSimulation simulation) {
-    final UserSpecifiedParameters params = simulation.sliderPositions;
+    final SimulationParams params = simulation.sliderPositions;
     final List<Widget> jobs = params.jobs.listInOrder
         .mapWithIdx<Widget>((Job job, int idx) => _Jobs(idx, job, simulation))
         .toList();
@@ -45,40 +47,21 @@ class SlidersListView extends StatelessWidget {
         ...jobs,
         _ThemedCard(
           child: Column(children: [
+            // Age at retirement has special handling (minimum valid value)
             _lifetimeSlider(
               params,
-              'Age at retirement',
+              ParamRegistry.ageAtRetirement.displayName,
               params.ageAtRetirement,
               pliantMinimumValidValue: params.jobs.listInOrder.last.age,
             ),
-            ArgSlider(
-              title: 'Effective income tax rate',
-              slidableValue: params.effectiveIncomeTaxRate,
-              minimum: 0,
-              maximum: 50,
-              metadata: params.metadataFor('effectiveIncomeTaxRate'),
-            ),
-            ArgSlider(
-              title: 'Start \$: Taxable',
-              slidableValue: params.initialTaxableInvestmentsGross,
-              minimum: 0,
-              maximum: 2e6,
-              metadata: params.metadataFor('initialTaxableInvestmentsGross'),
-            ),
-            ArgSlider(
-              title: 'Start \$: Traditional',
-              slidableValue: params.initialTraditionalRetirement,
-              minimum: 0,
-              maximum: 1e6,
-              metadata: params.metadataFor('initialTraditionalRetirement'),
-            ),
-            ArgSlider(
-              title: 'Start \$: Roth',
-              slidableValue: params.initialRothRetirement,
-              minimum: 0,
-              maximum: 1e6,
-              metadata: params.metadataFor('initialRothRetirement'),
-            ),
+            ArgSlider.fromDefinition(
+                ParamRegistry.effectiveIncomeTaxRate, params),
+            ArgSlider.fromDefinition(
+                ParamRegistry.initialTaxableInvestmentsGross, params),
+            ArgSlider.fromDefinition(
+                ParamRegistry.initialTraditionalRetirement, params),
+            ArgSlider.fromDefinition(
+                ParamRegistry.initialRothRetirement, params),
           ]),
         )
       ],
@@ -109,8 +92,8 @@ class SlidersListView extends StatelessWidget {
         .withIdx((idx, v) => ArgSlider(
               title: '${ith(place: idx + 1)} child',
               slidableValue: v,
-              minimum: 25,
-              maximum: 55,
+              minimum: ParamRegistry.childBirthAge.minimum ?? 25,
+              maximum: ParamRegistry.childBirthAge.maximum ?? 55,
             ))
         .toList();
     return _SliderGroup(
@@ -132,63 +115,22 @@ class SlidersListView extends StatelessWidget {
                   _ResidenceSlider(residence, idx, simulation))
               .toList());
 
-  static _SliderGroup _lifestyleGroup(
-      UserSpecifiedParameters simulationParams) {
-    return _SliderGroup(title: 'Lifestyle', children: [
-      ArgSlider(
-        title: 'Non-food / mo',
-        slidableValue: simulationParams.monthlyNonFoodBudget,
-        minimum: 1e3,
-        maximum: 14e3,
-        metadata: simulationParams.metadataFor('monthlyNonFoodBudget'),
-      ),
-      ArgSlider(
-        title: 'Food / mo',
-        slidableValue: simulationParams.monthlyFoodBudget,
-        minimum: 300,
-        maximum: 3000,
-        metadata: simulationParams.metadataFor('monthlyFoodBudget'),
-      ),
-      ArgSlider(
-        title: 'Traditional 401k \$/yr',
-        slidableValue: simulationParams.traditionalContributionTarget,
-        maximum: 25e3,
-        metadata:
-            simulationParams.metadataFor('traditionalContributionTarget'),
-      ),
-      ArgSlider(
-        title: 'Roth IRA \$/yr',
-        slidableValue: simulationParams.rothContributionTarget,
-        maximum: 10e3,
-        metadata: simulationParams.metadataFor('rothContributionTarget'),
-      ),
-    ]);
+  static _SliderGroup _lifestyleGroup(SimulationParams params) {
+    return _SliderGroup(
+      title: ParamCategory.lifestyle.displayName,
+      children: ParamRegistry.byCategory(ParamCategory.lifestyle)
+          .map((def) => ArgSlider.fromDefinition(def, params))
+          .toList(),
+    );
   }
 
-  static Widget _circumstanceGroup(UserSpecifiedParameters simulationParams) {
-    return _SliderGroup(title: 'Circumstance', children: [
-      ArgSlider(
-        title: '(real) Investment returns',
-        slidableValue: simulationParams.realInvestmentReturns,
-        minimum: -5,
-        maximum: 13,
-        metadata: simulationParams.metadataFor('realInvestmentReturns'),
-      ),
-      ArgSlider(
-        title: 'Inflation rate',
-        slidableValue: simulationParams.inflationRate,
-        minimum: -5,
-        maximum: 13,
-        metadata: simulationParams.metadataFor('inflationRate'),
-      ),
-      ArgSlider(
-        title: '(real) Debt rate',
-        slidableValue: simulationParams.debtApr,
-        minimum: .5,
-        maximum: 25,
-        metadata: simulationParams.metadataFor('debtApr'),
-      ),
-    ]);
+  static Widget _circumstanceGroup(SimulationParams params) {
+    return _SliderGroup(
+      title: ParamCategory.circumstance.displayName,
+      children: ParamRegistry.byCategory(ParamCategory.circumstance)
+          .map((def) => ArgSlider.fromDefinition(def, params))
+          .toList(),
+    );
   }
 }
 
@@ -335,14 +277,17 @@ class _Jobs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserSpecifiedParameters simulationParams = simulation.sliderPositions;
-    final Widget startDateSlider =
-        _lifetimeSlider(simulationParams, 'Age hired', job.age);
+    SimulationParams simulationParams = simulation.sliderPositions;
+    final Widget startDateSlider = _lifetimeSlider(
+      simulationParams,
+      ParamRegistry.jobAge.displayName,
+      job.age,
+    );
     final Widget salarySlider = ArgSlider(
-      title: 'Starting salary',
+      title: ParamRegistry.jobSalary.displayName,
       slidableValue: job.salary,
-      minimum: 0,
-      maximum: 700e3,
+      minimum: ParamRegistry.jobSalary.minimum ?? 0,
+      maximum: ParamRegistry.jobSalary.maximum ?? 700e3,
     );
     return Column(
       children: [
@@ -358,8 +303,7 @@ class _Jobs extends StatelessWidget {
     );
   }
 
-  Widget _addButton(
-      BuildContext context, UserSpecifiedParameters simulationParams) {
+  Widget _addButton(BuildContext context, SimulationParams simulationParams) {
     return _Button.pipedAdd(
       context: context,
       suffix: 'job',
@@ -372,8 +316,7 @@ class _Jobs extends StatelessWidget {
     );
   }
 
-  Widget _topRow(
-      BuildContext context, UserSpecifiedParameters simulationParams) {
+  Widget _topRow(BuildContext context, SimulationParams simulationParams) {
     final colors = AppColors.of(context);
     final number = idx == 0 ? 'Preexisting' : '${ith(place: idx + 1)}';
     final Widget deleteButton = Padding(
@@ -414,7 +357,7 @@ class _ResidenceSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-    final UserSpecifiedParameters params = simulation.sliderPositions;
+    final SimulationParams params = simulation.sliderPositions;
     final PrimaryResidences residences = params.primaryResidences;
 
     final Widget ithTitle = Padding(
@@ -449,9 +392,9 @@ class _ResidenceSlider extends StatelessWidget {
       ),
     );
     final Widget ageSlider = ArgSlider(
-      title: 'Age',
+      title: ParamRegistry.residenceAge.displayName,
       slidableValue: residence.age,
-      minimum: 20,
+      minimum: ParamRegistry.residenceAge.minimum ?? 20,
       maximum: idx > 0
           ? params.endAge.toDouble()
           : params.simulationStartingAge.toDouble(),
@@ -463,39 +406,39 @@ class _ResidenceSlider extends StatelessWidget {
       maximum: residence.contractType.now.maximum,
     );
     final Widget downPaymentSlider = ArgSlider(
-      title: 'Down payment %',
-      maximum: 100,
+      title: ParamRegistry.residenceDownPayment.displayName,
+      maximum: ParamRegistry.residenceDownPayment.maximum ?? 100,
       slidableValue: residence.downPayment,
     );
     final Widget taxRateSlider = ArgSlider(
-      title: 'Property tax %',
-      minimum: 0.5,
-      maximum: 4,
+      title: ParamRegistry.residencePropertyTax.displayName,
+      minimum: ParamRegistry.residencePropertyTax.minimum ?? 0.5,
+      maximum: ParamRegistry.residencePropertyTax.maximum ?? 4,
       slidableValue: residence.propertyTaxRate,
     );
     final Widget insuranceSlider = ArgSlider(
-      title: 'Insurance \$/yr',
-      minimum: 500,
-      maximum: 10000,
+      title: ParamRegistry.residenceInsurance.displayName,
+      minimum: ParamRegistry.residenceInsurance.minimum ?? 500,
+      maximum: ParamRegistry.residenceInsurance.maximum ?? 10000,
       slidableValue: residence.insurancePrice,
     );
     final Widget hoaSlider = ArgSlider(
-      title: 'HOA \$/yr',
-      minimum: 0,
-      maximum: 12000,
+      title: ParamRegistry.residenceHoa.displayName,
+      minimum: ParamRegistry.residenceHoa.minimum ?? 0,
+      maximum: ParamRegistry.residenceHoa.maximum ?? 12000,
       slidableValue: residence.hoaPrice,
     );
     final Widget mortgageAprSlider = ArgSlider(
-      title: 'Mortgage %APR',
-      minimum: 2,
-      maximum: 20,
+      title: ParamRegistry.residenceMortgageApr.displayName,
+      minimum: ParamRegistry.residenceMortgageApr.minimum ?? 2,
+      maximum: ParamRegistry.residenceMortgageApr.maximum ?? 20,
       slidableValue: residence.mortgageApr,
     );
     final Widget appreciationSlider = ArgSlider(
-      title: '(real) Housing appreciation',
+      title: ParamRegistry.residenceAppreciation.displayName,
       slidableValue: residence.housingAppreciateRate,
-      minimum: -5,
-      maximum: 7,
+      minimum: ParamRegistry.residenceAppreciation.minimum ?? -5,
+      maximum: ParamRegistry.residenceAppreciation.maximum ?? 7,
     );
     final Widget addResidenceButton = _Button.pipedAdd(
       context: context,
@@ -530,7 +473,7 @@ class _ResidenceSlider extends StatelessWidget {
 }
 
 Widget _lifetimeSlider(
-  UserSpecifiedParameters simulationParams,
+  SimulationParams simulationParams,
   String title,
   SlidableSimulatorArg pliantValue, {
   SlidableSimulatorArg? pliantMinimumValidValue,

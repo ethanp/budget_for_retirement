@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:budget_for_retirement/model/financial_simulation.dart';
+import 'package:budget_for_retirement/model/param_definition.dart';
+import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/util/config_metadata.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
@@ -21,6 +23,21 @@ class ArgSlider extends StatelessWidget {
   }) {
     if (minimum > slidableValue.now) slidableValue.slideTo(minimum);
     if (maximum < slidableValue.now) slidableValue.slideTo(maximum);
+  }
+
+  /// Creates an ArgSlider from a ParamDefinition and SimulationParams.
+  factory ArgSlider.fromDefinition(
+    ParamDefinition def,
+    SimulationParams params,
+  ) {
+    return ArgSlider(
+      title: def.displayName,
+      slidableValue: params.getSlider(def),
+      minimum: def.minimum ?? 0,
+      maximum: def.maximum ?? 100,
+      endsWithNever: def.endsWithNever,
+      metadata: params.metadataFor(def.key),
+    );
   }
 
   final String title;

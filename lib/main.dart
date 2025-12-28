@@ -28,7 +28,7 @@ class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = context.watch<ThemeNotifier>();
 
-    return FutureBuilder<SimulationDefaults>(
+    return FutureBuilder<Map<String, dynamic>>(
       future: _loader.load(),
       builder: (context, snapshot) {
         Widget home;
@@ -39,9 +39,9 @@ class AppWidget extends StatelessWidget {
             errorMessage: snapshot.error.toString(),
           );
         } else {
-          final defaults = snapshot.requireData;
+          final configJson = snapshot.requireData;
           home = ChangeNotifierProvider(
-            create: (_) => FinancialSimulation(defaults: defaults),
+            create: (_) => FinancialSimulation(configJson: configJson),
             child: HomePage(),
           );
         }

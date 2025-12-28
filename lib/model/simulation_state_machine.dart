@@ -7,7 +7,7 @@ import 'life_events.dart';
 import 'non_house_expenses.dart';
 import 'residences.dart';
 import 'retirement_accounts.dart';
-import 'user_specified_parameters.dart';
+import 'simulation_params.dart';
 
 class SimulationStateMachine {
   SimulationStateMachine._({
@@ -36,7 +36,7 @@ class SimulationStateMachine {
   double get totalRetirementSavings =>
       traditionalRetirement.grossValue + rothRetirement.grossValue;
 
-  factory SimulationStateMachine.createFrom(UserSpecifiedParameters args) {
+  factory SimulationStateMachine.createFrom(SimulationParams args) {
     return SimulationStateMachine._(
       economy: Economy(
         effectiveIncomeTaxRate: args.effectiveIncomeTaxRate,

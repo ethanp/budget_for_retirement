@@ -81,7 +81,8 @@ class _SlidersState extends State<Sliders> {
         width: double.infinity,
         height: headerHeight,
         decoration: BoxDecoration(
-          color: colors.surfaceForHealth(isHealthy: isFinanciallyHealthy(simulation)),
+          color: colors.surfaceForHealth(
+              isHealthy: isFinanciallyHealthy(simulation)),
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
         child: Padding(
@@ -142,7 +143,8 @@ class _SlidersState extends State<Sliders> {
             end: Alignment.bottomCenter,
             colors: [
               colors.backgroundDepth1,
-              colors.surfaceForHealth(isHealthy: isFinanciallyHealthy(simulation)),
+              colors.surfaceForHealth(
+                  isHealthy: isFinanciallyHealthy(simulation)),
             ],
           ),
         ),

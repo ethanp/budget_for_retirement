@@ -1,7 +1,8 @@
+import 'package:budget_for_retirement/model/param_registry.dart';
+import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:budget_for_retirement/model/simulation_state_machine.dart';
-import 'package:budget_for_retirement/model/user_specified_parameters.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Colors;
 
 import 'line_builder.dart';
 
@@ -10,59 +11,45 @@ class LinesBuilder {
 
   factory LinesBuilder.empty() => LinesBuilder._();
 
-  final _taxableInvestments = LineBuilder(
-    name: 'Taxable Investments',
-    color: Colors.green.withOpacity(0.3),
-    extractYAxisValue: (lifeState) => lifeState.taxableInvestments.grossValue,
+  final _taxableInvestments = LineBuilder.fromRegistry(
+    ParamRegistry.initialTaxableInvestmentsGross,
+    (s) => s.taxableInvestments.grossValue,
   );
-  final _traditionalRetirement = LineBuilder(
-    name: 'Traditional (401k/IRA)',
-    color: Colors.blue.withOpacity(0.3),
-    extractYAxisValue: (lifeState) =>
-        lifeState.traditionalRetirement.grossValue,
+  final _traditionalRetirement = LineBuilder.fromRegistry(
+    ParamRegistry.initialTraditionalRetirement,
+    (s) => s.traditionalRetirement.grossValue,
   );
-  final _rothRetirement = LineBuilder(
-    name: 'Roth (IRA/HSA)',
-    color: Colors.indigo.withOpacity(0.3),
-    extractYAxisValue: (lifeState) => lifeState.rothRetirement.grossValue,
+  final _rothRetirement = LineBuilder.fromRegistry(
+    ParamRegistry.initialRothRetirement,
+    (s) => s.rothRetirement.grossValue,
   );
-  final _homeBalance = LineBuilder(
-    name: 'Home equity',
-    color: Colors.greenAccent.withOpacity(0.6),
-    extractYAxisValue: (lifeState) =>
-        lifeState.residences.homeEquity(lifeState.lifeEvents),
+  final _homeBalance = LineBuilder.fromRegistry(
+    ParamRegistry.homeEquity,
+    (s) => s.residences.homeEquity(s.lifeEvents),
   );
-  final netSavings = LineBuilder(
-    name: 'Net Worth',
-    color: Colors.black87,
-    extractYAxisValue: (lifeState) =>
-        lifeState.taxableInvestments.grossValue +
-        lifeState.residences.homeEquity(lifeState.lifeEvents) +
-        lifeState.totalRetirementSavings -
-        lifeState.nonMortgageDebt.grossValue,
+  final netSavings = LineBuilder.fromRegistry(
+    ParamRegistry.netWorth,
+    (s) =>
+        s.taxableInvestments.grossValue +
+        s.residences.homeEquity(s.lifeEvents) +
+        s.totalRetirementSavings -
+        s.nonMortgageDebt.grossValue,
   );
-  final _earnings = LineBuilder(
-    name: 'Earnings',
-    color: Colors.purple.withOpacity(0.3),
-    extractYAxisValue: (lifeState) =>
-        lifeState.salary.annualThisYear(lifeState.lifeEvents),
+  final _earnings = LineBuilder.fromRegistry(
+    ParamRegistry.earnings,
+    (s) => s.salary.annualThisYear(s.lifeEvents),
   );
-  final _nonHousingExpenses = LineBuilder(
-    name: 'Non-housing expenses',
-    color: Colors.orange.withOpacity(0.3),
-    extractYAxisValue: (lifeState) => lifeState.spending
-        .expensesThisYear(lifeState.lifeEvents, lifeState.economy),
+  final _nonHousingExpenses = LineBuilder.fromRegistry(
+    ParamRegistry.nonHousingExpenses,
+    (s) => s.spending.expensesThisYear(s.lifeEvents, s.economy),
   );
-  final _housingExpenses = LineBuilder(
-    name: 'Housing expenses',
-    color: Colors.pink.withOpacity(0.3),
-    extractYAxisValue: (lifeState) =>
-        lifeState.residences.costsThisYear(lifeState.lifeEvents),
+  final _housingExpenses = LineBuilder.fromRegistry(
+    ParamRegistry.housingExpenses,
+    (s) => s.residences.costsThisYear(s.lifeEvents),
   );
-  final _debt = LineBuilder(
-    name: '"Bad" debt',
-    color: Colors.pink,
-    extractYAxisValue: (lifeState) => lifeState.nonMortgageDebt.grossValue,
+  final _debt = LineBuilder.fromRegistry(
+    ParamRegistry.debt,
+    (s) => s.nonMortgageDebt.grossValue,
   );
 
   /// NB: This is the order the legend appears in.
@@ -83,7 +70,7 @@ class LinesBuilder {
       (lineBuilder) => lineBuilder.appendDataPointsExtractedFrom(lifeState));
 
   static List<VerticalLineBuilder> verticalLines(
-    UserSpecifiedParameters initialState,
+    SimulationParams initialState,
   ) =>
       [
         VerticalLineBuilder(

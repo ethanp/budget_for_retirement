@@ -1,3 +1,4 @@
+import 'package:budget_for_retirement/model/param_definition.dart';
 import 'package:budget_for_retirement/model/simulation_state_machine.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,17 @@ class LineBuilder {
     required this.color,
     required this.extractYAxisValue,
   });
+
+  /// Create from registry definition (uses chartName/chartColor).
+  factory LineBuilder.fromRegistry(
+    ParamDefinition def,
+    double Function(SimulationStateMachine) extractor,
+  ) =>
+      LineBuilder(
+        name: def.chartName!,
+        color: def.chartColor!,
+        extractYAxisValue: extractor,
+      );
 
   /// Format required by FlChart library for 2D-coordinates.
   final List<FlSpot> dataPoints = [];
