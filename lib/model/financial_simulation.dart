@@ -30,7 +30,7 @@ class FinancialSimulation extends ChangeNotifier {
   void run() {
     latestData = LinesBuilder.empty();
     final simulationState = SimulationStateMachine.createFrom(sliderPositions);
-    while (!simulationState.lifeEvents.isDead) {
+    while (!simulationState.lifeEvents.pastEndAge) {
       simulationState.advanceOneYear();
       latestData.addYear(simulationState);
     }
@@ -47,7 +47,7 @@ class FinancialSimulation extends ChangeNotifier {
 
     final minRetirementAge = _findMinimumRetirementAge(
       from: sliderPositions.simulationStartingAge.now,
-      to: sliderPositions.ageAtDeath.now,
+      to: sliderPositions.endAge.now,
     );
 
     sliderPositions.ageAtRetirement.updateTo(origRetirementAge);
@@ -63,14 +63,14 @@ class FinancialSimulation extends ChangeNotifier {
   }
 
   /// Returns true iff retiring at [retirementAge] would still allow living
-  /// the rest of life and dying with a net worth of at least zero.
+  /// until age 95 with a net worth of at least zero.
   bool _isSafeRetirementAge(int retirementAge) {
     // NB: Only needs partial re-calculation for each iteration, but it's
     //  already fast enough.
     final simulationData = LinesBuilder.empty();
     sliderPositions.ageAtRetirement.updateTo(retirementAge);
     final simulationState = SimulationStateMachine.createFrom(sliderPositions);
-    while (!simulationState.lifeEvents.isDead) {
+    while (!simulationState.lifeEvents.pastEndAge) {
       simulationState.advanceOneYear();
       simulationData.addYear(simulationState);
     }

@@ -61,7 +61,7 @@ class FinancialLineChart extends StatelessWidget {
 
           // Define the domain and range of the chart.
           minX: _initialLifeState(context).simulationStartingAge.now - 2.0,
-          maxX: _initialLifeState(context).ageAtDeath.now + 2.0,
+          maxX: _initialLifeState(context).endAge.now + 2.0,
           minY: 0,
           maxY: maxY,
         ),

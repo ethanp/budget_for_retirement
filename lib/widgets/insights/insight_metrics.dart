@@ -37,8 +37,8 @@ MinRetirementInsightData buildMinRetirementInsightData(
   FinancialSimulation simulation,
 ) {
   final int minRetirementAge = simulation.findMinRetirementAge();
-  final int death = simulation.sliderPositions.ageAtDeath.now;
-  final bool canStopWorking = minRetirementAge < death;
+  final int endAge = simulation.sliderPositions.endAge.now;
+  final bool canStopWorking = minRetirementAge < endAge;
   final String text = canStopWorking ? '$minRetirementAge' : 'Never';
   final Color color = canStopWorking ? _successColor : _dangerColor;
 
@@ -54,14 +54,14 @@ NetWorthInsightData buildNetWorthInsightData(
 ) {
   final double finalSavings =
       simulation.latestData.netSavings.dataPoints.last.y;
-  final bool dieWithSavings = finalSavings >= 0;
-  final Color color = dieWithSavings ? _successColor : _dangerColor;
+  final bool endWithSavings = finalSavings >= 0;
+  final Color color = endWithSavings ? _successColor : _dangerColor;
   final String finalCurrency = finalSavings.asCompactDollars();
 
   return NetWorthInsightData(
     displayValue: finalCurrency,
     color: color,
-    hasPositiveNetWorth: dieWithSavings,
+    hasPositiveNetWorth: endWithSavings,
     value: finalSavings,
   );
 }
@@ -97,4 +97,10 @@ NetWorthInsightData buildNetWorthAtAge45InsightData(
     hasPositiveNetWorth: isPositive,
     value: netWorth,
   );
+}
+
+bool isFinanciallyHealthy(FinancialSimulation simulation) {
+  final netWorthAt45 = buildNetWorthAtAge45InsightData(simulation);
+  final netWorthAtEnd = buildNetWorthInsightData(simulation);
+  return netWorthAt45.hasPositiveNetWorth && netWorthAtEnd.hasPositiveNetWorth;
 }

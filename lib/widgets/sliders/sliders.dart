@@ -1,6 +1,7 @@
 import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/theme/theme_notifier.dart';
+import 'package:budget_for_retirement/widgets/insights/insight_metrics.dart';
 import 'package:budget_for_retirement/widgets/sliders/slider_insights.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,7 @@ class _SlidersState extends State<Sliders> {
 
   Widget _header(BuildContext context, double safeAreaTop) {
     final colors = AppColors.of(context);
+    final simulation = FinancialSimulation.watchFrom(context);
 
     return Positioned(
       top: safeAreaTop,
@@ -79,7 +81,7 @@ class _SlidersState extends State<Sliders> {
         width: double.infinity,
         height: headerHeight,
         decoration: BoxDecoration(
-          color: colors.surfaceAccent,
+          color: colors.surfaceForHealth(isHealthy: isFinanciallyHealthy(simulation)),
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
         child: Padding(
@@ -126,6 +128,7 @@ class _SlidersState extends State<Sliders> {
 
   Widget _safeAreaGradient(BuildContext context, double safeAreaTop) {
     final colors = AppColors.of(context);
+    final simulation = FinancialSimulation.watchFrom(context);
 
     return Positioned(
       top: 0,
@@ -139,7 +142,7 @@ class _SlidersState extends State<Sliders> {
             end: Alignment.bottomCenter,
             colors: [
               colors.backgroundDepth1,
-              colors.surfaceAccent,
+              colors.surfaceForHealth(isHealthy: isFinanciallyHealthy(simulation)),
             ],
           ),
         ),

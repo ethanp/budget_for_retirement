@@ -45,12 +45,14 @@ class SimulationDefaults {
     required this.children,
     required this.primaryResidences,
     required this.ageAtRetirement,
-    required this.ageAtDeath,
+    required this.endAge,
     required this.simulationStartingAge,
     required this.monthlyNonFoodBudget,
     required this.monthlyFoodBudget,
-    required this.initialGrossRetirementInvestments,
-    required this.retirementInvestmentsPerAnnumTarget,
+    required this.initialTraditionalRetirement,
+    required this.initialRothRetirement,
+    required this.traditionalContributionTarget,
+    required this.rothContributionTarget,
     required this.initialTaxableInvestmentsGross,
     required this.effectiveIncomeTaxRate,
     required this.debtApr,
@@ -64,12 +66,14 @@ class SimulationDefaults {
   final List<int> children;
   final List<ResidenceConfig> primaryResidences;
   final int ageAtRetirement;
-  final int ageAtDeath;
+  final int endAge;
   final int simulationStartingAge;
   final double monthlyNonFoodBudget;
   final double monthlyFoodBudget;
-  final Map<String, double> initialGrossRetirementInvestments;
-  final Map<String, double> retirementInvestmentsPerAnnumTarget;
+  final Map<String, double> initialTraditionalRetirement;
+  final Map<String, double> initialRothRetirement;
+  final Map<String, double> traditionalContributionTarget;
+  final Map<String, double> rothContributionTarget;
   final Map<String, double> initialTaxableInvestmentsGross;
   final double effectiveIncomeTaxRate;
   final double debtApr;
@@ -106,19 +110,27 @@ class SimulationDefaults {
             _ensureJsonMap(value, 'primaryResidences.item')),
       ),
       ageAtRetirement: extractWithMeta('ageAtRetirement', _requireIntWithMeta),
-      ageAtDeath: extractWithMeta('ageAtDeath', _requireIntWithMeta),
+      endAge: extractWithMeta('endAge', _requireIntWithMeta),
       simulationStartingAge:
           extractWithMeta('simulationStartingAge', _requireIntWithMeta),
       monthlyNonFoodBudget:
           extractWithMeta('monthlyNonFoodBudget', _requireDoubleWithMeta),
       monthlyFoodBudget:
           extractWithMeta('monthlyFoodBudget', _requireDoubleWithMeta),
-      initialGrossRetirementInvestments: extractWithMeta(
-        'initialGrossRetirementInvestments',
+      initialTraditionalRetirement: extractWithMeta(
+        'initialTraditionalRetirement',
         _requireNumericMapWithMeta,
       ),
-      retirementInvestmentsPerAnnumTarget: extractWithMeta(
-        'retirementInvestmentsPerAnnumTarget',
+      initialRothRetirement: extractWithMeta(
+        'initialRothRetirement',
+        _requireNumericMapWithMeta,
+      ),
+      traditionalContributionTarget: extractWithMeta(
+        'traditionalContributionTarget',
+        _requireNumericMapWithMeta,
+      ),
+      rothContributionTarget: extractWithMeta(
+        'rothContributionTarget',
         _requireNumericMapWithMeta,
       ),
       initialTaxableInvestmentsGross: extractWithMeta(

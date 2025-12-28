@@ -16,7 +16,7 @@ class SliderInsights extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: colors.surfaceAccent,
+        color: colors.surfaceForHealth(isHealthy: isFinanciallyHealthy(simulation)),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: colors.borderDepth1, width: 0.5),
         boxShadow: [
@@ -48,7 +48,7 @@ class SliderInsights extends StatelessWidget {
           _divider(context),
           Expanded(
             child: _InsightTile(
-              label: 'At death',
+              label: 'At 95',
               value: netWorthData.displayValue,
               valueColor: netWorthData.color,
             ),

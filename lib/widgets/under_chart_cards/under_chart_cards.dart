@@ -84,9 +84,9 @@ class _LifespanCardState extends UnderChartCardState<LifespanCard> {
     final colors = AppColors.of(context);
     final simulation = FinancialSimulation.watchFrom(context);
     final startingAge = simulation.sliderPositions.simulationStartingAge.now;
-    final int death = simulation.sliderPositions.ageAtDeath.now;
+    final int endAge = simulation.sliderPositions.endAge.now;
     return Text(
-      '$startingAge–to-$death',
+      '$startingAge–to-$endAge',
       style: TextStyle(
         fontSize: 20,
         color: colors.accentPrimary,
@@ -127,7 +127,7 @@ class FinalGrossCard extends StatefulWidget {
 class _FinalGrossCardState extends UnderChartCardState<FinalGrossCard> {
   @override
   Widget title(BuildContext context) =>
-      titleStyle(context, 'Net worth at death');
+      titleStyle(context, 'Net worth at 95');
 
   @override
   final bool expands = false;

@@ -15,10 +15,16 @@ class LinesBuilder {
     color: Colors.green.withOpacity(0.3),
     extractYAxisValue: (lifeState) => lifeState.taxableInvestments.grossValue,
   );
-  final _retirementSavings = LineBuilder(
-    name: 'Retirement accounts',
+  final _traditionalRetirement = LineBuilder(
+    name: 'Traditional (401k/IRA)',
     color: Colors.blue.withOpacity(0.3),
-    extractYAxisValue: (lifeState) => lifeState.retirementSavings.grossValue,
+    extractYAxisValue: (lifeState) =>
+        lifeState.traditionalRetirement.grossValue,
+  );
+  final _rothRetirement = LineBuilder(
+    name: 'Roth (IRA/HSA)',
+    color: Colors.indigo.withOpacity(0.3),
+    extractYAxisValue: (lifeState) => lifeState.rothRetirement.grossValue,
   );
   final _homeBalance = LineBuilder(
     name: 'Home equity',
@@ -32,7 +38,7 @@ class LinesBuilder {
     extractYAxisValue: (lifeState) =>
         lifeState.taxableInvestments.grossValue +
         lifeState.residences.homeEquity(lifeState.lifeEvents) +
-        lifeState.retirementSavings.grossValue -
+        lifeState.totalRetirementSavings -
         lifeState.nonMortgageDebt.grossValue,
   );
   final _earnings = LineBuilder(
@@ -66,7 +72,8 @@ class LinesBuilder {
         _debt,
         _nonHousingExpenses,
         _housingExpenses,
-        _retirementSavings,
+        _traditionalRetirement,
+        _rothRetirement,
         _earnings,
         _taxableInvestments,
         _homeBalance,

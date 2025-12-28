@@ -9,7 +9,7 @@ class EndResultDisplay extends StatelessWidget {
     final simulationData = FinancialSimulation.watchFrom(context).latestData;
     final finalPoint = simulationData.netSavings.dataPoints.last;
     final finalSavings = finalPoint.y;
-    final dieWithSavings = finalSavings > 0;
+    final endWithSavings = finalSavings > 0;
     final finalCurrency = finalSavings.asCompactDollars();
     final finalAge = finalPoint.x.toInt();
     return Align(
@@ -18,7 +18,7 @@ class EndResultDisplay extends StatelessWidget {
         "At age $finalAge, you'll have $finalCurrency",
         style: TextStyle(
           fontSize: 20,
-          color: dieWithSavings ? Colors.grey[200] : Colors.black87.withRed(99),
+          color: endWithSavings ? Colors.grey[200] : Colors.black87.withRed(99),
           fontWeight: FontWeight.w500,
         ),
       ),

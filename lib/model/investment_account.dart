@@ -59,28 +59,5 @@ class TaxableInvestments extends InvestmentAccount {
   }
 }
 
-/// Tax-free savings accounts for use after retirement.
-///
-/// Includes 401(k)s, IRAs, HSAs.
-class RetirementSavings extends InvestmentAccount {
-  /// This number *includes* the employer's "match" payments.
-  /// It may not be pulled in the full amount, if eg. expenses are too high, or
-  /// salary is too low.
-  final double perAnnumTarget;
-
-  RetirementSavings({
-    required this.perAnnumTarget,
-    required double initialGross,
-  }) : super(grossValue: initialGross);
-
-  /// Assume 50% is "earnings" and 50% is "contributions". Pay 10% additional
-  /// fee for early withdrawals. _Lots_ of assumptions going on in this method.
-  @override
-  double taxesOnWithdrawal(double amt, bool isEarlyWithdrawal) {
-    final capitalGains = Economy.longTermCapitalGainsTaxRate.of(amt / 2);
-    final retirementMarginalIncomeTaxRate = 22.percent;
-    final incomeTax = retirementMarginalIncomeTaxRate.of(amt / 2);
-    final fine = isEarlyWithdrawal ? 10.percent.of(amt) : 0.0;
-    return [capitalGains, fine, incomeTax].sum;
-  }
-}
+// RetirementSavings has been split into TraditionalRetirement and RothRetirement
+// in retirement_accounts.dart for proper tax treatment.

@@ -3,7 +3,7 @@ import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
 
 class LifeEvents {
   final List<int> ageAtChildren;
-  final int ageAtDeath;
+  final int endAge;
   final List<Job> jobs;
   final int ageAtRetirement;
   final int startingAge;
@@ -14,7 +14,7 @@ class LifeEvents {
     required this.ageAtChildren,
     required this.jobs,
     required this.ageAtRetirement,
-    required this.ageAtDeath,
+    required this.endAge,
     required this.startingAge,
     this.currentAge = -1,
   }) {
@@ -27,9 +27,9 @@ class LifeEvents {
 
   bool get isRetired => currentAge > ageAtRetirement;
 
-  bool get justDied => currentAge == ageAtDeath;
+  bool get reachedEndAge => currentAge == endAge;
 
-  bool get isDead => currentAge > ageAtDeath;
+  bool get pastEndAge => currentAge > endAge;
 
   bool get justHadChild => ageAtChildren.contains(currentAge);
 

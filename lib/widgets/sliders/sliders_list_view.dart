@@ -66,11 +66,18 @@ class SlidersListView extends StatelessWidget {
               metadata: params.metadataFor('initialTaxableInvestmentsGross'),
             ),
             ArgSlider(
-              title: 'Start \$: Retirement',
-              slidableValue: params.initialGrossRetirementInvestments,
+              title: 'Start \$: Traditional',
+              slidableValue: params.initialTraditionalRetirement,
               minimum: 0,
               maximum: 1e6,
-              metadata: params.metadataFor('initialGrossRetirementInvestments'),
+              metadata: params.metadataFor('initialTraditionalRetirement'),
+            ),
+            ArgSlider(
+              title: 'Start \$: Roth',
+              slidableValue: params.initialRothRetirement,
+              minimum: 0,
+              maximum: 1e6,
+              metadata: params.metadataFor('initialRothRetirement'),
             ),
           ]),
         )
@@ -125,7 +132,8 @@ class SlidersListView extends StatelessWidget {
                   _ResidenceSlider(residence, idx, simulation))
               .toList());
 
-  static _SliderGroup _lifestyleGroup(UserSpecifiedParameters simulationParams) {
+  static _SliderGroup _lifestyleGroup(
+      UserSpecifiedParameters simulationParams) {
     return _SliderGroup(title: 'Lifestyle', children: [
       ArgSlider(
         title: 'Non-food / mo',
@@ -142,10 +150,17 @@ class SlidersListView extends StatelessWidget {
         metadata: simulationParams.metadataFor('monthlyFoodBudget'),
       ),
       ArgSlider(
-        title: 'Retirement savings \$/yr (target)',
-        slidableValue: simulationParams.retirementInvestmentsPerAnnumTarget,
-        maximum: 33e3,
-        metadata: simulationParams.metadataFor('retirementInvestmentsPerAnnumTarget'),
+        title: 'Traditional 401k \$/yr',
+        slidableValue: simulationParams.traditionalContributionTarget,
+        maximum: 25e3,
+        metadata:
+            simulationParams.metadataFor('traditionalContributionTarget'),
+      ),
+      ArgSlider(
+        title: 'Roth IRA \$/yr',
+        slidableValue: simulationParams.rothContributionTarget,
+        maximum: 10e3,
+        metadata: simulationParams.metadataFor('rothContributionTarget'),
       ),
     ]);
   }
@@ -299,8 +314,10 @@ class _ResidenceContractTypeSwitch extends StatelessWidget {
       ),
     );
 
-    final onStyle = TextStyle(fontWeight: FontWeight.w700, color: colors.textColor1, fontSize: 13);
-    final offStyle = TextStyle(fontWeight: FontWeight.w300, color: colors.textColor3, fontSize: 13);
+    final onStyle = TextStyle(
+        fontWeight: FontWeight.w700, color: colors.textColor1, fontSize: 13);
+    final offStyle = TextStyle(
+        fontWeight: FontWeight.w300, color: colors.textColor3, fontSize: 13);
 
     final ownLabel = Text('Own', style: isSwitchedOn ? offStyle : onStyle);
     final rentLabel = Text('Rent', style: isSwitchedOn ? onStyle : offStyle);
@@ -319,7 +336,8 @@ class _Jobs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserSpecifiedParameters simulationParams = simulation.sliderPositions;
-    final Widget startDateSlider = _lifetimeSlider(simulationParams, 'Age hired', job.age);
+    final Widget startDateSlider =
+        _lifetimeSlider(simulationParams, 'Age hired', job.age);
     final Widget salarySlider = ArgSlider(
       title: 'Starting salary',
       slidableValue: job.salary,
@@ -340,7 +358,8 @@ class _Jobs extends StatelessWidget {
     );
   }
 
-  Widget _addButton(BuildContext context, UserSpecifiedParameters simulationParams) {
+  Widget _addButton(
+      BuildContext context, UserSpecifiedParameters simulationParams) {
     return _Button.pipedAdd(
       context: context,
       suffix: 'job',
@@ -353,7 +372,8 @@ class _Jobs extends StatelessWidget {
     );
   }
 
-  Widget _topRow(BuildContext context, UserSpecifiedParameters simulationParams) {
+  Widget _topRow(
+      BuildContext context, UserSpecifiedParameters simulationParams) {
     final colors = AppColors.of(context);
     final number = idx == 0 ? 'Preexisting' : '${ith(place: idx + 1)}';
     final Widget deleteButton = Padding(
@@ -433,7 +453,7 @@ class _ResidenceSlider extends StatelessWidget {
       slidableValue: residence.age,
       minimum: 20,
       maximum: idx > 0
-          ? params.ageAtDeath.toDouble()
+          ? params.endAge.toDouble()
           : params.simulationStartingAge.toDouble(),
     );
     final Widget priceSlider = ArgSlider(
@@ -519,7 +539,7 @@ Widget _lifetimeSlider(
     title: title,
     slidableValue: pliantValue,
     minimum: simulationParams.simulationStartingAge.toDouble(),
-    maximum: simulationParams.ageAtDeath.toDouble() + 5,
+    maximum: simulationParams.endAge.toDouble() + 5,
     endsWithNever: true,
     slidableMinimumValidValue: pliantMinimumValidValue,
   );

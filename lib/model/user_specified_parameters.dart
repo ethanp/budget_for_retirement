@@ -8,12 +8,14 @@ class UserSpecifiedParameters {
   Children children;
   PrimaryResidences primaryResidences;
   Int ageAtRetirement;
-  Int ageAtDeath;
+  Int endAge;
   Int simulationStartingAge;
   Dollars monthlyNonFoodBudget;
   Dollars monthlyFoodBudget;
-  Dollars initialGrossRetirementInvestments;
-  Dollars retirementInvestmentsPerAnnumTarget;
+  Dollars initialTraditionalRetirement;
+  Dollars initialRothRetirement;
+  Dollars traditionalContributionTarget;
+  Dollars rothContributionTarget;
   Dollars initialTaxableInvestmentsGross;
   Percent effectiveIncomeTaxRate;
   Percent debtApr;
@@ -26,12 +28,14 @@ class UserSpecifiedParameters {
     required this.children,
     required this.primaryResidences,
     required this.ageAtRetirement,
-    required this.ageAtDeath,
+    required this.endAge,
     required this.simulationStartingAge,
     required this.monthlyNonFoodBudget,
     required this.monthlyFoodBudget,
-    required this.initialGrossRetirementInvestments,
-    required this.retirementInvestmentsPerAnnumTarget,
+    required this.initialTraditionalRetirement,
+    required this.initialRothRetirement,
+    required this.traditionalContributionTarget,
+    required this.rothContributionTarget,
     required this.initialTaxableInvestmentsGross,
     required this.effectiveIncomeTaxRate,
     required this.debtApr,
@@ -55,14 +59,16 @@ class UserSpecifiedParameters {
       children: Children(childrenList),
       primaryResidences: PrimaryResidences(residencesList),
       ageAtRetirement: Int(defaults.ageAtRetirement),
-      ageAtDeath: Int(defaults.ageAtDeath),
+      endAge: Int(defaults.endAge),
       simulationStartingAge: Int(defaults.simulationStartingAge),
       monthlyNonFoodBudget: Dollars(defaults.monthlyNonFoodBudget),
       monthlyFoodBudget: Dollars(defaults.monthlyFoodBudget),
-      initialGrossRetirementInvestments:
-          thousandDollars(defaults.initialGrossRetirementInvestments),
-      retirementInvestmentsPerAnnumTarget:
-          thousandDollars(defaults.retirementInvestmentsPerAnnumTarget),
+      initialTraditionalRetirement:
+          thousandDollars(defaults.initialTraditionalRetirement),
+      initialRothRetirement: thousandDollars(defaults.initialRothRetirement),
+      traditionalContributionTarget:
+          thousandDollars(defaults.traditionalContributionTarget),
+      rothContributionTarget: thousandDollars(defaults.rothContributionTarget),
       initialTaxableInvestmentsGross:
           thousandDollars(defaults.initialTaxableInvestmentsGross),
       effectiveIncomeTaxRate: defaults.effectiveIncomeTaxRate.percent,

@@ -8,6 +8,7 @@ class AppColors {
     required this.backgroundDepth4,
     required this.backgroundDepth5,
     required this.surfaceAccent,
+    required this.surfaceAccentSuccess,
     required this.accentPrimary,
     required this.accentSecondary,
     required this.accentTertiary,
@@ -27,6 +28,7 @@ class AppColors {
   final Color backgroundDepth4;
   final Color backgroundDepth5;
   final Color surfaceAccent;
+  final Color surfaceAccentSuccess;
   final Color accentPrimary;
   final Color accentSecondary;
   final Color accentTertiary;
@@ -46,6 +48,7 @@ class AppColors {
     backgroundDepth4: Color(0xFFEEEEEE),
     backgroundDepth5: Color(0xFFE0E0E0),
     surfaceAccent: Color(0xFFFBE9E7),
+    surfaceAccentSuccess: Color(0xFFE8F5E9),
     accentPrimary: Color(0xFF00A896),
     accentSecondary: Color(0xFF00897B),
     accentTertiary: Color(0xFF00695C),
@@ -65,7 +68,8 @@ class AppColors {
     backgroundDepth3: Color(0xFF1A1A1A),
     backgroundDepth4: Color(0xFF222222),
     backgroundDepth5: Color(0xFF2A2A2A),
-    surfaceAccent: Color(0xFF1A2A2A),
+    surfaceAccent: Color(0xFF2A1A1A),
+    surfaceAccentSuccess: Color(0xFF1A2E1A),
     accentPrimary: Color(0xFF00D9B5),
     accentSecondary: Color(0xFF00A896),
     accentTertiary: Color(0xFF007A6E),
@@ -81,5 +85,7 @@ class AppColors {
 
   static AppColors of(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark ? dark : light;
-}
 
+  Color surfaceForHealth({required bool isHealthy}) =>
+      isHealthy ? surfaceAccentSuccess : surfaceAccent;
+}
