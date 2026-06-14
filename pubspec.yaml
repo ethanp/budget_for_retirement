@@ -6,9 +6,11 @@ publish_to: "none" # WARNING: Removing this could publish to pub.dev.
 version: 1.0.0+2
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
+  ethan_utils:
+    path: ../ethan_utils
   flutter:
     sdk: flutter
 

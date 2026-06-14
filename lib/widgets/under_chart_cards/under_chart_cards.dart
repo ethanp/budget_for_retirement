@@ -1,6 +1,7 @@
 import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
-import 'package:budget_for_retirement/util/extensions.dart';
+import 'package:budget_for_retirement/util/extensions.dart' show CompactCurrency;
+import 'package:ethan_utils/ethan_utils.dart';
 import 'package:budget_for_retirement/widgets/insights/insight_metrics.dart';
 import 'package:budget_for_retirement/widgets/line_chart/line_builder.dart';
 import 'package:fl_chart/fl_chart.dart';

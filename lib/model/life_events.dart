@@ -1,4 +1,4 @@
-import 'package:budget_for_retirement/util/extensions.dart';
+import 'package:ethan_utils/ethan_utils.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
 
 class LifeEvents {
@@ -35,8 +35,9 @@ class LifeEvents {
 
   int get yearsSinceStart => currentAge - startingAge;
 
-  Job get currentJob =>
-      jobs.sortOn((j) => j.age.now).lastWhere((j) => j.age.now <= currentAge);
+  Job get currentJob => jobs
+      .sortedOn((job) => job.age.now)
+      .lastWhere((job) => job.age.now <= currentAge);
 
   Iterable<int> get currentChildAges =>
       ageAtChildren.where((c) => c <= currentAge).map((c) => currentAge - c);

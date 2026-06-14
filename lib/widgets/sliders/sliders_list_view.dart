@@ -3,7 +3,8 @@ import 'package:budget_for_retirement/model/param_definition.dart';
 import 'package:budget_for_retirement/model/param_registry.dart';
 import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
-import 'package:budget_for_retirement/util/extensions.dart';
+import 'package:budget_for_retirement/util/extensions.dart' show ith;
+import 'package:ethan_utils/ethan_utils.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,7 @@ class SlidersListView extends StatelessWidget {
   static _SliderGroup _careerGroup(FinancialSimulation simulation) {
     final SimulationParams params = simulation.sliderPositions;
     final List<Widget> jobs = params.jobs.listInOrder
-        .mapWithIdx<Widget>((Job job, int idx) => _Jobs(idx, job, simulation))
+        .mapWithIndex<Widget>((Job job, int idx) => _Jobs(idx, job, simulation))
         .toList();
 
     return _SliderGroup(
@@ -89,7 +90,7 @@ class SlidersListView extends StatelessWidget {
       },
     );
     final childAgeSliders = params.children.sliders
-        .withIdx((idx, v) => ArgSlider(
+        .mapWithIndex((v, idx) => ArgSlider(
               title: '${ith(place: idx + 1)} child',
               slidableValue: v,
               minimum: ParamRegistry.childBirthAge.minimum,
@@ -111,7 +112,7 @@ class SlidersListView extends StatelessWidget {
       _SliderGroup(
           title: 'Residences',
           children: simulation.sliderPositions.primaryResidences.listInOrder
-              .withIdx<Widget>((int idx, PrimaryResidence residence) =>
+              .mapWithIndex<Widget>((PrimaryResidence residence, int idx) =>
                   _ResidenceSlider(residence, idx, simulation))
               .toList());
 

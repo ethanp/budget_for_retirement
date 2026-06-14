@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:ethan_utils/ethan_utils.dart';
 
 import 'package:budget_for_retirement/util/extensions.dart';
 
@@ -134,14 +135,14 @@ class PrimaryResidences extends SubsequentableArg<PrimaryResidence> {
   /// always receive the [listInOrder] in order of increasing starting
   /// [PrimaryResidence.age].
   @override
-  List<PrimaryResidence> get listInOrder => _now.sortOn((c) => c.age.now);
+  List<PrimaryResidence> get listInOrder => _now.sortedOn((residence) => residence.age.now);
 }
 
 class Jobs extends SubsequentableArg<Job> {
   Jobs(super.now);
 
   @override
-  List<Job> get listInOrder => _now.sortOn((c) => c.age.now);
+  List<Job> get listInOrder => _now.sortedOn((job) => job.age.now);
 }
 
 class PliantContractType extends MutableSimulatorArg<ResidenceContractType> {

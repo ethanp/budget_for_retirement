@@ -1,5 +1,5 @@
 import 'package:budget_for_retirement/model/economy.dart';
-import 'package:budget_for_retirement/util/extensions.dart';
+import 'package:ethan_utils/ethan_utils.dart';
 
 import 'life_events.dart';
 
