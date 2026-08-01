@@ -41,5 +41,6 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Deploy script cache
+# Local phone_deploy / deploy.rb fingerprints
 .deploy_hash
+.deploy_*_hash
