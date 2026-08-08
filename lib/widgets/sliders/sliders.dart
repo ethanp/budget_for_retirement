@@ -1,7 +1,6 @@
 import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/theme/theme_notifier.dart';
-import 'package:budget_for_retirement/widgets/insights/insight_metrics.dart';
 import 'package:budget_for_retirement/widgets/sliders/slider_insights.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -81,8 +80,7 @@ class _SlidersState extends State<Sliders> {
         width: double.infinity,
         height: headerHeight,
         decoration: BoxDecoration(
-          color: colors.surfaceForHealth(
-              isHealthy: isFinanciallyHealthy(simulation)),
+          color: colors.surfaceForHealth(isHealthy: simulation.isFinanciallyHealthy),
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
         child: Padding(
@@ -143,8 +141,7 @@ class _SlidersState extends State<Sliders> {
             end: Alignment.bottomCenter,
             colors: [
               colors.backgroundDepth1,
-              colors.surfaceForHealth(
-                  isHealthy: isFinanciallyHealthy(simulation)),
+              colors.surfaceForHealth(isHealthy: simulation.isFinanciallyHealthy),
             ],
           ),
         ),

@@ -16,8 +16,7 @@ class SliderInsights extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: colors.surfaceForHealth(
-            isHealthy: isFinanciallyHealthy(simulation)),
+        color: colors.surfaceForHealth(isHealthy: simulation.isFinanciallyHealthy),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: colors.borderDepth1, width: 0.5),
         boxShadow: [

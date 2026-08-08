@@ -1,3 +1,4 @@
+import 'package:budget_for_retirement/widgets/insights/insight_metrics.dart';
 import 'package:budget_for_retirement/widgets/line_chart/lines_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -74,5 +75,11 @@ class FinancialSimulation extends ChangeNotifier {
       simulationData.addYear(simulationState);
     }
     return simulationData.netSavings.dataPoints.last.y >= 0;
+  }
+
+  bool get isFinanciallyHealthy {
+    final netWorthAt45 = buildNetWorthAtAge45InsightData(this);
+    final netWorthAtEnd = buildNetWorthInsightData(this);
+    return netWorthAt45.hasPositiveNetWorth && netWorthAtEnd.hasPositiveNetWorth;
   }
 }

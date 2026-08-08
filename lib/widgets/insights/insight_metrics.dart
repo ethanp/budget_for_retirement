@@ -99,8 +99,3 @@ NetWorthInsightData buildNetWorthAtAge45InsightData(
   );
 }
 
-bool isFinanciallyHealthy(FinancialSimulation simulation) {
-  final netWorthAt45 = buildNetWorthAtAge45InsightData(simulation);
-  final netWorthAtEnd = buildNetWorthInsightData(simulation);
-  return netWorthAt45.hasPositiveNetWorth && netWorthAtEnd.hasPositiveNetWorth;
-}
