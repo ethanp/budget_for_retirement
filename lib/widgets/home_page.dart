@@ -2,95 +2,127 @@ import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/widgets/line_chart/financial_line_chart.dart';
 import 'package:budget_for_retirement/widgets/under_chart_cards/housing_card.dart';
 import 'package:budget_for_retirement/widgets/under_chart_cards/under_chart_cards.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:ethan_ui/ethan_ui.dart';
 import 'package:flutter/material.dart';
 
 import 'sliders/sliders.dart';
 
-class HomePage extends StatelessWidget {
+class MainTab {
+  const MainTab({
+    required this.icon,
+    required this.label,
+    required this.screen,
+  });
+
+  final IconData icon;
+  final String label;
+  final Widget screen;
+}
+
+const _mainTabs = <MainTab>[
+  MainTab(
+    icon: Icons.tune,
+    label: 'Sliders',
+    screen: Sliders(showInsightsOverlay: true),
+  ),
+  MainTab(
+    icon: Icons.bar_chart,
+    label: 'Chart',
+    screen: _ChartTab(),
+  ),
+  MainTab(
+    icon: Icons.view_list,
+    label: 'Details',
+    screen: _DetailsTab(),
+  ),
+];
+
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedTabIndex = 0;
+  final _navigatorKeys = List<GlobalKey<NavigatorState>>.generate(
+    _mainTabs.length,
+    (_) => GlobalKey<NavigatorState>(),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return EScaffoldShell(
+      contentMaxWidth: double.infinity,
+      bottomBar: ETabBar(
+        selectedIndex: _selectedTabIndex,
+        tabs: [
+          for (final tab in _mainTabs) ETab(icon: tab.icon, label: tab.label),
+        ],
+        onSelected: (index) {
+          if (index == _selectedTabIndex) {
+            _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
+            return;
+          }
+          setState(() => _selectedTabIndex = index);
+        },
+      ),
+      body: IndexedStack(
+        index: _selectedTabIndex,
+        children: [
+          for (var tabIndex = 0; tabIndex < _mainTabs.length; tabIndex++)
+            Navigator(
+              key: _navigatorKeys[tabIndex],
+              onGenerateRoute: (settings) => MaterialPageRoute<void>(
+                settings: settings,
+                builder: (_) => _mainTabs[tabIndex].screen,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChartTab extends StatelessWidget {
+  const _ChartTab();
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-
-    return CupertinoTabScaffold(
-      tabBar: CupertinoTabBar(
-        backgroundColor: colors.backgroundDepth2,
-        activeColor: colors.accentPrimary,
-        inactiveColor: colors.textColor3,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.slider_horizontal_3),
-            label: 'Sliders',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.chart_bar),
-            label: 'Chart',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.square_list),
-            label: 'Details',
-          ),
-        ],
+    return ColoredBox(
+      color: colors.backgroundDepth1,
+      child: const Padding(
+        padding: EdgeInsets.all(1),
+        child: FinancialLineChart(),
       ),
-      tabBuilder: (context, index) {
-        switch (index) {
-          case 0:
-            return CupertinoTabView(
-              builder: (context) => Material(
-                child: const Sliders(showInsightsOverlay: true),
-              ),
-            );
-          case 1:
-            return CupertinoTabView(
-              builder: (context) => Material(
-                color: colors.backgroundDepth1,
-                child: SafeArea(
-                  top: false,
-                  child: Container(
-                    color: colors.backgroundDepth1,
-                    padding: const EdgeInsets.all(1),
-                    child: const FinancialLineChart(),
-                  ),
-                ),
-              ),
-            );
-          case 2:
-            return CupertinoTabView(
-              builder: (context) => Material(
-                color: colors.backgroundDepth1,
-                child: SafeArea(
-                  top: false,
-                  child: SingleChildScrollView(
-                    child: underChartCards(context),
-                  ),
-                ),
-              ),
-            );
-          default:
-            return CupertinoTabView(
-              builder: (context) => Material(
-                child: const Sliders(showInsightsOverlay: true),
-              ),
-            );
-        }
-      },
     );
   }
+}
 
-  Widget underChartCards(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+class _DetailsTab extends StatelessWidget {
+  const _DetailsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    return ColoredBox(
+      color: colors.backgroundDepth1,
+      child: SingleChildScrollView(
+        child: Column(
           children: [
-            LifespanCard(),
-            MinRetirementCard(),
-            FinalGrossCard(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                LifespanCard(),
+                MinRetirementCard(),
+                FinalGrossCard(),
+              ],
+            ),
+            HousingCard(),
+            ForecastTableCard(),
           ],
         ),
-        HousingCard(),
-        ForecastTableCard(),
-      ],
+      ),
     );
   }
 }

@@ -11,6 +11,8 @@ environment:
 dependencies:
   ethan_utils:
     path: ../ethan_utils
+  ethan_ui:
+    path: ../ethan_ui
   flutter:
     sdk: flutter
 
