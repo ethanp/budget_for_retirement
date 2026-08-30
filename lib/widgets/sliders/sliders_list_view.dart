@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 
 import 'arg_slider.dart';
 
-class SlidersListView extends StatelessWidget {
+class SlidersListView() extends StatelessWidget {
   static Widget _headerButtonText(String text) {
     return Text(
       text,
@@ -29,12 +29,12 @@ class SlidersListView extends StatelessWidget {
   }
 
   static List<Widget> _sliderGroups(FinancialSimulation simulation) => [
-        _careerGroup(simulation),
-        _childrenGroup(simulation),
-        _residencesGroup(simulation),
-        _lifestyleGroup(simulation.sliderPositions),
-        _circumstanceGroup(simulation.sliderPositions),
-      ];
+    _careerGroup(simulation),
+    _childrenGroup(simulation),
+    _residencesGroup(simulation),
+    _lifestyleGroup(simulation.sliderPositions),
+    _circumstanceGroup(simulation.sliderPositions),
+  ];
 
   static _SliderGroup _careerGroup(FinancialSimulation simulation) {
     final SimulationParams params = simulation.sliderPositions;
@@ -47,24 +47,34 @@ class SlidersListView extends StatelessWidget {
       children: [
         ...jobs,
         _ThemedCard(
-          child: Column(children: [
-            // Age at retirement has special handling (minimum valid value)
-            _lifetimeSlider(
-              params,
-              ParamRegistry.ageAtRetirement.displayName,
-              params.ageAtRetirement,
-              pliantMinimumValidValue: params.jobs.listInOrder.last.age,
-            ),
-            ArgSlider.fromDefinition(
-                ParamRegistry.effectiveIncomeTaxRate, params),
-            ArgSlider.fromDefinition(
-                ParamRegistry.initialTaxableInvestmentsGross, params),
-            ArgSlider.fromDefinition(
-                ParamRegistry.initialTraditionalRetirement, params),
-            ArgSlider.fromDefinition(
-                ParamRegistry.initialRothRetirement, params),
-          ]),
-        )
+          child: Column(
+            children: [
+              // Age at retirement has special handling (minimum valid value)
+              _lifetimeSlider(
+                params,
+                ParamRegistry.ageAtRetirement.displayName,
+                params.ageAtRetirement,
+                pliantMinimumValidValue: params.jobs.listInOrder.last.age,
+              ),
+              ArgSlider.fromDefinition(
+                ParamRegistry.effectiveIncomeTaxRate,
+                params,
+              ),
+              ArgSlider.fromDefinition(
+                ParamRegistry.initialTaxableInvestmentsGross,
+                params,
+              ),
+              ArgSlider.fromDefinition(
+                ParamRegistry.initialTraditionalRetirement,
+                params,
+              ),
+              ArgSlider.fromDefinition(
+                ParamRegistry.initialRothRetirement,
+                params,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -90,31 +100,32 @@ class SlidersListView extends StatelessWidget {
       },
     );
     final childAgeSliders = params.children.sliders
-        .mapWithIndex((v, idx) => ArgSlider(
-              title: '${ith(place: idx + 1)} child',
-              slidableValue: v,
-              minimum: ParamRegistry.childBirthAge.minimum,
-              maximum: ParamRegistry.childBirthAge.maximum,
-            ))
+        .mapWithIndex(
+          (v, idx) => ArgSlider(
+            title: '${ith(place: idx + 1)} child',
+            slidableValue: v,
+            minimum: ParamRegistry.childBirthAge.minimum,
+            maximum: ParamRegistry.childBirthAge.maximum,
+          ),
+        )
         .toList();
     return _SliderGroup(
       title: 'Children',
       children: childAgeSliders,
-      headers: [
-        removeChildButton,
-        SizedBox(width: 8),
-        addChildButton,
-      ],
+      headers: [removeChildButton, SizedBox(width: 8), addChildButton],
     );
   }
 
   static _SliderGroup _residencesGroup(FinancialSimulation simulation) =>
       _SliderGroup(
-          title: 'Residences',
-          children: simulation.sliderPositions.primaryResidences.listInOrder
-              .mapWithIndex<Widget>((PrimaryResidence residence, int idx) =>
-                  _ResidenceSlider(residence, idx, simulation))
-              .toList());
+        title: 'Residences',
+        children: simulation.sliderPositions.primaryResidences.listInOrder
+            .mapWithIndex<Widget>(
+              (PrimaryResidence residence, int idx) =>
+                  _ResidenceSlider(residence, idx, simulation),
+            )
+            .toList(),
+      );
 
   static _SliderGroup _lifestyleGroup(SimulationParams params) {
     return _SliderGroup(
@@ -135,10 +146,7 @@ class SlidersListView extends StatelessWidget {
   }
 }
 
-class _ThemedCard extends StatelessWidget {
-  const _ThemedCard({required this.child});
-  final Widget child;
-
+class const _ThemedCard({required final Widget child}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -150,17 +158,11 @@ class _ThemedCard extends StatelessWidget {
   }
 }
 
-class _SliderGroup extends StatelessWidget {
-  const _SliderGroup({
-    required this.title,
-    required this.children,
-    this.headers = const [],
-  });
-
-  final String title;
-  final List<Widget> children;
-  final List<Widget> headers;
-
+class const _SliderGroup({
+  required final String title,
+  required final List<Widget> children,
+  final List<Widget> headers = const [],
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -181,7 +183,10 @@ class _SliderGroup extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 4, left: 6, right: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [_titleText(context), Row(children: headers)],
+          children: [
+            _titleText(context),
+            Row(children: headers),
+          ],
         ),
       ),
     );
@@ -203,17 +208,11 @@ class _SliderGroup extends StatelessWidget {
   }
 }
 
-class _SliderGroupTitleButton extends StatelessWidget {
-  const _SliderGroupTitleButton({
-    required this.onTap,
-    required this.child,
-    required this.isAdd,
-  });
-
-  final VoidCallback? onTap;
-  final Widget child;
-  final bool isAdd;
-
+class const _SliderGroupTitleButton({
+  required final VoidCallback? onTap,
+  required final Widget child,
+  required final bool isAdd,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -232,11 +231,8 @@ class _SliderGroupTitleButton extends StatelessWidget {
   }
 }
 
-class _ResidenceContractTypeSwitch extends StatelessWidget {
-  const _ResidenceContractTypeSwitch(this.residence);
-
-  final PrimaryResidence residence;
-
+class const _ResidenceContractTypeSwitch(final PrimaryResidence residence)
+    extends StatelessWidget {
   bool get isSwitchedOn => residence.isRental;
 
   @override
@@ -258,9 +254,15 @@ class _ResidenceContractTypeSwitch extends StatelessWidget {
     );
 
     final onStyle = TextStyle(
-        fontWeight: FontWeight.w700, color: colors.textColor1, fontSize: 13);
+      fontWeight: FontWeight.w700,
+      color: colors.textColor1,
+      fontSize: 13,
+    );
     final offStyle = TextStyle(
-        fontWeight: FontWeight.w300, color: colors.textColor3, fontSize: 13);
+      fontWeight: FontWeight.w300,
+      color: colors.textColor3,
+      fontSize: 13,
+    );
 
     final ownLabel = Text('Own', style: isSwitchedOn ? offStyle : onStyle);
     final rentLabel = Text('Rent', style: isSwitchedOn ? onStyle : offStyle);
@@ -269,13 +271,11 @@ class _ResidenceContractTypeSwitch extends StatelessWidget {
   }
 }
 
-class _Jobs extends StatelessWidget {
-  const _Jobs(this.idx, this.job, this.simulation);
-
-  final int idx;
-  final Job job;
-  final FinancialSimulation simulation;
-
+class const _Jobs(
+  final int idx,
+  final Job job,
+  final FinancialSimulation simulation,
+) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SimulationParams simulationParams = simulation.sliderPositions;
@@ -284,16 +284,20 @@ class _Jobs extends StatelessWidget {
       ParamRegistry.jobAge.displayName,
       job.age,
     );
-    final salarySlider =
-        ArgSlider.fromListField(ParamRegistry.jobSalary, job.salary);
+    final salarySlider = ArgSlider.fromListField(
+      ParamRegistry.jobSalary,
+      job.salary,
+    );
     return Column(
       children: [
         _ThemedCard(
-          child: Column(children: [
-            _topRow(context, simulationParams),
-            if (idx > 0) startDateSlider,
-            salarySlider,
-          ]),
+          child: Column(
+            children: [
+              _topRow(context, simulationParams),
+              if (idx > 0) startDateSlider,
+              salarySlider,
+            ],
+          ),
         ),
         _addButton(context, simulationParams),
       ],
@@ -328,29 +332,29 @@ class _Jobs extends StatelessWidget {
     );
     return Padding(
       padding: const EdgeInsets.all(8).copyWith(bottom: 2),
-      child: Row(children: [
-        Text(
-          '$number job',
-          style: TextStyle(
-            color: colors.accentSecondary,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w800,
-            fontSize: 15,
+      child: Row(
+        children: [
+          Text(
+            '$number job',
+            style: TextStyle(
+              color: colors.accentSecondary,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+            ),
           ),
-        ),
-        if (idx > 0) deleteButton,
-      ]),
+          if (idx > 0) deleteButton,
+        ],
+      ),
     );
   }
 }
 
-class _ResidenceSlider extends StatelessWidget {
-  const _ResidenceSlider(this.residence, this.idx, this.simulation);
-
-  final PrimaryResidence residence;
-  final int idx;
-  final FinancialSimulation simulation;
-
+class const _ResidenceSlider(
+  final PrimaryResidence residence,
+  final int idx,
+  final FinancialSimulation simulation,
+) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -373,10 +377,7 @@ class _ResidenceSlider extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(children: [
-            ithTitle,
-            _ResidenceContractTypeSwitch(residence),
-          ]),
+          Row(children: [ithTitle, _ResidenceContractTypeSwitch(residence)]),
           if (idx > 0)
             _Button.delete(
               context: context,
@@ -403,17 +404,29 @@ class _ResidenceSlider extends StatelessWidget {
       maximum: residence.contractType.now.maximum,
     );
     final downPaymentSlider = ArgSlider.fromListField(
-        ParamRegistry.residenceDownPayment, residence.downPayment);
+      ParamRegistry.residenceDownPayment,
+      residence.downPayment,
+    );
     final taxRateSlider = ArgSlider.fromListField(
-        ParamRegistry.residencePropertyTax, residence.propertyTaxRate);
+      ParamRegistry.residencePropertyTax,
+      residence.propertyTaxRate,
+    );
     final insuranceSlider = ArgSlider.fromListField(
-        ParamRegistry.residenceInsurance, residence.insurancePrice);
-    final hoaSlider =
-        ArgSlider.fromListField(ParamRegistry.residenceHoa, residence.hoaPrice);
+      ParamRegistry.residenceInsurance,
+      residence.insurancePrice,
+    );
+    final hoaSlider = ArgSlider.fromListField(
+      ParamRegistry.residenceHoa,
+      residence.hoaPrice,
+    );
     final mortgageAprSlider = ArgSlider.fromListField(
-        ParamRegistry.residenceMortgageApr, residence.mortgageApr);
+      ParamRegistry.residenceMortgageApr,
+      residence.mortgageApr,
+    );
     final appreciationSlider = ArgSlider.fromListField(
-        ParamRegistry.residenceAppreciation, residence.housingAppreciateRate);
+      ParamRegistry.residenceAppreciation,
+      residence.housingAppreciateRate,
+    );
     final Widget addResidenceButton = _Button.pipedAdd(
       context: context,
       suffix: 'residence',
@@ -425,24 +438,23 @@ class _ResidenceSlider extends StatelessWidget {
       },
     );
     final Widget residenceSliders = _ThemedCard(
-      child: Column(children: [
-        topRow,
-        ageSlider,
-        priceSlider,
-        if (!residence.isRental) ...[
-          downPaymentSlider,
-          taxRateSlider,
-          insuranceSlider,
-          hoaSlider,
-          mortgageAprSlider,
-          appreciationSlider,
+      child: Column(
+        children: [
+          topRow,
+          ageSlider,
+          priceSlider,
+          if (!residence.isRental) ...[
+            downPaymentSlider,
+            taxRateSlider,
+            insuranceSlider,
+            hoaSlider,
+            mortgageAprSlider,
+            appreciationSlider,
+          ],
         ],
-      ]),
+      ),
     );
-    return Column(children: [
-      residenceSliders,
-      addResidenceButton,
-    ]);
+    return Column(children: [residenceSliders, addResidenceButton]);
   }
 }
 
@@ -462,7 +474,7 @@ Widget _lifetimeSlider(
   );
 }
 
-class _Button {
+class _Button() {
   static Widget pipedAdd({
     required BuildContext context,
     required String suffix,

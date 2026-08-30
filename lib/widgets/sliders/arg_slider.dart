@@ -11,25 +11,22 @@ import 'package:flutter/material.dart';
 import 'metadata_badge.dart';
 
 /// Primary UX element for configuring arguments to the [FinancialSimulation].
-class ArgSlider extends StatelessWidget {
-  ArgSlider({
-    required this.title,
-    this.minimum = 0,
-    required this.maximum,
-    required this.slidableValue,
-    this.slidableMinimumValidValue,
-    this.endsWithNever = false,
-    this.metadata,
-  }) {
+class ArgSlider({
+  required final String title,
+  final double minimum = 0,
+  required final double maximum,
+  required final SlidableSimulatorArg slidableValue,
+  final SlidableSimulatorArg? slidableMinimumValidValue,
+  final bool endsWithNever = false,
+  final ConfigMetadata? metadata,
+}) extends StatelessWidget {
+  this {
     if (minimum > slidableValue.now) slidableValue.slideTo(minimum);
     if (maximum < slidableValue.now) slidableValue.slideTo(maximum);
   }
 
   /// Creates an ArgSlider from a ParamDefinition and SimulationParams.
-  factory ArgSlider.fromDefinition(
-    ParamDefinition def,
-    SimulationParams params,
-  ) {
+  factory fromDefinition(ParamDefinition def, SimulationParams params) {
     return ArgSlider(
       title: def.displayName,
       slidableValue: params.getSlider(def),
@@ -41,7 +38,7 @@ class ArgSlider extends StatelessWidget {
   }
 
   /// Creates an ArgSlider from a ListFieldDefinition and slidable value.
-  factory ArgSlider.fromListField(
+  factory fromListField(
     ListFieldDefinition def,
     SlidableSimulatorArg slidableValue,
   ) {
@@ -53,15 +50,6 @@ class ArgSlider extends StatelessWidget {
     );
   }
 
-  final String title;
-  final double minimum;
-  final double maximum;
-  final SlidableSimulatorArg slidableValue;
-  final ConfigMetadata? metadata;
-
-  final bool endsWithNever;
-  final SlidableSimulatorArg? slidableMinimumValidValue;
-
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -70,8 +58,9 @@ class ArgSlider extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(4)),
-          color:
-              tooLow ? colors.dangerColor.withOpacity(.4) : Colors.transparent,
+          color: tooLow
+              ? colors.dangerColor.withOpacity(.4)
+              : Colors.transparent,
         ),
         height: 34,
         child: LayoutBuilder(
@@ -259,11 +248,14 @@ class ArgSlider extends StatelessWidget {
   }
 
   void incrementSecondDigit(
-      _TriangleDirection direction, BuildContext context) {
+    _TriangleDirection direction,
+    BuildContext context,
+  ) {
     final log10 = math.log(slidableValue.now) / math.log(10);
     final increment = math.pow(10, log10.floor() - 1).toDouble();
-    final adjustment =
-        direction == _TriangleDirection.up ? increment : -increment;
+    final adjustment = direction == _TriangleDirection.up
+        ? increment
+        : -increment;
     updateValue(slidableValue.now + adjustment, context);
   }
 
@@ -272,14 +264,15 @@ class ArgSlider extends StatelessWidget {
       slidableValue <= slidableMinimumValidValue!;
 }
 
-enum _TriangleDirection { up, down }
+enum _TriangleDirection() {
+  up,
+  down,
+}
 
-class _TrianglePainter extends CustomPainter {
-  final Color color;
-  final _TriangleDirection direction;
-
-  _TrianglePainter({required this.color, required this.direction});
-
+class _TrianglePainter({
+  required final Color color,
+  required final _TriangleDirection direction,
+}) extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path();

@@ -12,17 +12,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
-      child: AppWidget(),
-    ),
+    ChangeNotifierProvider(create: (_) => ThemeNotifier(), child: AppWidget()),
   );
 }
 
-class AppWidget extends StatelessWidget {
-  AppWidget({ConfigLoader? loader}) : _loader = loader ?? ConfigLoader();
-
-  final ConfigLoader _loader;
+class AppWidget({ConfigLoader? loader}) extends StatelessWidget {
+  final ConfigLoader _loader = loader ?? ConfigLoader();
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +30,7 @@ class AppWidget extends StatelessWidget {
         if (snapshot.connectionState != ConnectionState.done) {
           home = const _LoadingScreen();
         } else if (snapshot.hasError) {
-          home = ConfigErrorScreen(
-            errorMessage: snapshot.error.toString(),
-          );
+          home = ConfigErrorScreen(errorMessage: snapshot.error.toString());
         } else {
           final configJson = snapshot.requireData;
           home = ChangeNotifierProvider(
@@ -59,15 +52,9 @@ class AppWidget extends StatelessWidget {
   }
 }
 
-class _LoadingScreen extends StatelessWidget {
-  const _LoadingScreen();
-
+class const _LoadingScreen() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

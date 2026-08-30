@@ -1,31 +1,19 @@
 import 'package:budget_for_retirement/util/extensions.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
 
-class HouseExpenses {
-  const HouseExpenses.at({
-    required this.yearsInHouse,
-    required this.downPayment,
-    required this.purchasePrice,
-    required this.mortgageApr,
-    required this.housingAppreciationRate,
-    required this.propertyTaxRate,
-    required this.insurancePrice,
-    required this.hoaPrice,
-    required this.inflationRate,
-  });
-
-  final int yearsInHouse;
-  final Percent downPayment;
-  final Percent mortgageApr;
-  final Percent housingAppreciationRate;
-  final Percent propertyTaxRate;
-  final double insurancePrice;
-  final double hoaPrice;
-  final Percent inflationRate;
+class const HouseExpenses.at({
+  required final int yearsInHouse,
+  required final Percent downPayment,
 
   /// Needed to differentiate which house we're talking about.
-  final double purchasePrice;
-
+  required final double purchasePrice,
+  required final Percent mortgageApr,
+  required final Percent housingAppreciationRate,
+  required final Percent propertyTaxRate,
+  required final double insurancePrice,
+  required final double hoaPrice,
+  required final Percent inflationRate,
+}) {
   double get downPaymentAmt => downPayment.of(purchasePrice);
 
   static final int _mortgageDurationYears = 30;
@@ -97,7 +85,8 @@ class HouseExpenses {
 
   /// PMI applies while LTV > 80%, then drops off.
   /// Typical PMI ~0.2%–2% of value annually; use 0.5% by default.
-  double get pmi => yearsInHouse >= _mortgageDurationYears ||
+  double get pmi =>
+      yearsInHouse >= _mortgageDurationYears ||
           _remainingMortgage / currentValue <= 0.8
       ? 0
       : .5.percent.of(currentValue);
@@ -111,7 +100,8 @@ class HouseExpenses {
     if (yearsInHouse >= _mortgageDurationYears) return 0;
     final Percent scaleFactor = mortgageApr.toScaleFor(yearsInHouse);
     final double futureValueOfPrincipal = scaleFactor.of(_fullLoanAmount);
-    final double futureValueOfAnnuity = nominalAnnualMortgagePayment *
+    final double futureValueOfAnnuity =
+        nominalAnnualMortgagePayment *
         (scaleFactor.asDouble - 1) /
         _mortgageApr;
     return futureValueOfPrincipal - futureValueOfAnnuity;

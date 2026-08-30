@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 
-class AppTheme {
+class AppTheme() {
   static ThemeData light() {
     final colors = AppColors.light;
     return ThemeData(

@@ -3,16 +3,12 @@ import 'dart:convert';
 import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-class ConfigLoadException implements Exception {
-  ConfigLoadException(this.message);
-
-  final String message;
-
+class ConfigLoadException(final String message) implements Exception {
   @override
   String toString() => 'ConfigLoadException: $message';
 }
 
-class ConfigLoader {
+class ConfigLoader() {
   /// Loads and parses config.json, returning the raw JSON for reset functionality.
   Future<Map<String, dynamic>> load() async {
     late final String raw;
@@ -31,7 +27,8 @@ class ConfigLoader {
       parsed = decoded;
     } on FormatException catch (error) {
       throw ConfigLoadException(
-          'Unable to parse config.json: ${error.message}');
+        'Unable to parse config.json: ${error.message}',
+      );
     }
 
     // Validate by parsing (throws if invalid)

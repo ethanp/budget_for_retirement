@@ -1,46 +1,25 @@
 import 'package:flutter/material.dart';
 
-class AppColors {
-  const AppColors._({
-    required this.backgroundDepth1,
-    required this.backgroundDepth2,
-    required this.backgroundDepth3,
-    required this.backgroundDepth4,
-    required this.backgroundDepth5,
-    required this.surfaceAccent,
-    required this.surfaceAccentSuccess,
-    required this.accentPrimary,
-    required this.accentSecondary,
-    required this.accentTertiary,
-    required this.textColor1,
-    required this.textColor2,
-    required this.textColor3,
-    required this.textColor4,
-    required this.borderDepth1,
-    required this.borderDepth2,
-    required this.successColor,
-    required this.dangerColor,
-  });
-
-  final Color backgroundDepth1;
-  final Color backgroundDepth2;
-  final Color backgroundDepth3;
-  final Color backgroundDepth4;
-  final Color backgroundDepth5;
-  final Color surfaceAccent;
-  final Color surfaceAccentSuccess;
-  final Color accentPrimary;
-  final Color accentSecondary;
-  final Color accentTertiary;
-  final Color textColor1;
-  final Color textColor2;
-  final Color textColor3;
-  final Color textColor4;
-  final Color borderDepth1;
-  final Color borderDepth2;
-  final Color successColor;
-  final Color dangerColor;
-
+class const AppColors._({
+  required final Color backgroundDepth1,
+  required final Color backgroundDepth2,
+  required final Color backgroundDepth3,
+  required final Color backgroundDepth4,
+  required final Color backgroundDepth5,
+  required final Color surfaceAccent,
+  required final Color surfaceAccentSuccess,
+  required final Color accentPrimary,
+  required final Color accentSecondary,
+  required final Color accentTertiary,
+  required final Color textColor1,
+  required final Color textColor2,
+  required final Color textColor3,
+  required final Color textColor4,
+  required final Color borderDepth1,
+  required final Color borderDepth2,
+  required final Color successColor,
+  required final Color dangerColor,
+}) {
   static const light = AppColors._(
     backgroundDepth1: Color(0xFFFAFAFA),
     backgroundDepth2: Color(0xFFFFFFFF),

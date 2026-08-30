@@ -4,12 +4,10 @@ import 'package:flutter/cupertino.dart';
 
 import 'economy.dart';
 
-abstract class InvestmentAccount {
-  InvestmentAccount({required this.grossValue});
-
+abstract class InvestmentAccount({
   /// Gross value is pre-tax.
-  double grossValue;
-
+  required var double grossValue,
+}) {
   bool get isEmpty => grossValue <= 0;
 
   double afterTaxValue() => grossValue - taxesOnWithdrawal(grossValue, false);
@@ -24,9 +22,7 @@ abstract class InvestmentAccount {
       grossValue += percent.of(grossValue);
 }
 
-class NonMortgageDebt extends InvestmentAccount {
-  NonMortgageDebt({required super.grossValue});
-
+class NonMortgageDebt({required super.grossValue}) extends InvestmentAccount {
   @override
   void liquidateAndSpend(double amt, {bool isEarlyWithdrawal = false}) =>
       throw UnimplementedError('Cannot spend debt.');
@@ -36,9 +32,8 @@ class NonMortgageDebt extends InvestmentAccount {
       throw UnimplementedError('No taxes on debt.');
 }
 
-class TaxableInvestments extends InvestmentAccount {
-  TaxableInvestments({required super.grossValue});
-
+class TaxableInvestments({required super.grossValue})
+    extends InvestmentAccount {
   /// Assume 90% of the total amount is "earnings" and the rest is
   /// "contributions". This is conservative but reasonable. Only pay long-term
   /// cap-gains on "earnings" part.

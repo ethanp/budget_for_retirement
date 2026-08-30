@@ -1,14 +1,11 @@
 import 'dart:math' as math;
+
 import 'package:ethan_utils/ethan_utils.dart';
 
 import 'package:budget_for_retirement/util/extensions.dart';
 
 /// Holds the mutable value for a single [SimulatorArgumentSlider].
-abstract class MutableSimulatorArg<T> {
-  MutableSimulatorArg(this._now);
-
-  T _now;
-
+abstract class MutableSimulatorArg<T>(var T _now) {
   void updateTo(T newValue) => _now = newValue;
 
   /// For debugging purposes. Use [serialize] for storage purposes.
@@ -19,9 +16,8 @@ abstract class MutableSimulatorArg<T> {
   String get serialize => _now.toString();
 }
 
-class SlidableSimulatorArg<T extends num> extends MutableSimulatorArg<T> {
-  SlidableSimulatorArg(super.now);
-
+class SlidableSimulatorArg<T extends num>(super.now)
+    extends MutableSimulatorArg<T> {
   T get now => _now;
 
   void slideTo(double newValue) => updateTo(newValue as T);
@@ -29,16 +25,12 @@ class SlidableSimulatorArg<T extends num> extends MutableSimulatorArg<T> {
   bool operator <=(SlidableSimulatorArg other) => now <= other.now;
 }
 
-class Double extends SlidableSimulatorArg<double> {
-  Double(super.now);
-
-  factory Double.deserialize(String idx) => Double(double.parse(idx));
+class Double(super.now) extends SlidableSimulatorArg<double> {
+  factory deserialize(String idx) => Double(double.parse(idx));
 }
 
-class Int extends SlidableSimulatorArg<int> {
-  Int(super.now);
-
-  factory Int.deserialize(String line) => Int(int.parse(line));
+class Int(super.now) extends SlidableSimulatorArg<int> {
+  factory deserialize(String line) => Int(int.parse(line));
 
   @override
   void slideTo(double newValue) => _now = newValue.toInt();
@@ -46,10 +38,8 @@ class Int extends SlidableSimulatorArg<int> {
   double toDouble() => now.toDouble();
 }
 
-class Dollars extends Double {
-  Dollars(super.now);
-
-  factory Dollars.deserialize(String idx) => Dollars(double.parse(idx));
+class Dollars(super.now) extends Double {
+  factory deserialize(String idx) => Dollars(double.parse(idx));
 
   @override
   String toString() => now.asCompactDollars();
@@ -59,12 +49,10 @@ class Dollars extends Double {
   }
 }
 
-class Percent extends Double {
-  Percent(super.now);
+class Percent(super.now) extends Double {
+  factory deserialize(String idx) => Percent(double.parse(idx));
 
-  factory Percent.deserialize(String idx) => Percent(double.parse(idx));
-
-  factory Percent.unscaled(double amt) => Percent(amt * 100);
+  factory unscaled(double amt) => Percent(amt * 100);
 
   double get asDouble => now / 100;
 
@@ -89,9 +77,7 @@ class Percent extends Double {
   String toString() => '${now.toStringAsFixed(2)}%';
 }
 
-class Children extends MutableSimulatorArg<List<Int>> {
-  Children(super.now);
-
+class Children(super.now) extends MutableSimulatorArg<List<Int>> {
   List<int> get currentAges => _now.mapL((i) => i.now);
 
   int get count => _now.length;
@@ -109,18 +95,16 @@ class Children extends MutableSimulatorArg<List<Int>> {
   @override
   String get serialize => _now.map((age) => age.serialize).join(',');
 
-  factory Children.deserialize(String line) =>
+  factory deserialize(String line) =>
       Children(line.split(',').mapL((age) => Int.deserialize(age)));
 }
 
-abstract class Subsequentable<T> {
+abstract class Subsequentable<T>() {
   T get createSubsequent;
 }
 
-abstract class SubsequentableArg<T extends Subsequentable>
+abstract class SubsequentableArg<T extends Subsequentable>(super.now)
     extends MutableSimulatorArg<List<T>> {
-  SubsequentableArg(super.now);
-
   void addOneAfter(int idx) => _now.insert(idx + 1, _now[idx].createSubsequent);
 
   void remove(T residence) => _now.remove(residence);
@@ -128,83 +112,58 @@ abstract class SubsequentableArg<T extends Subsequentable>
   List<T> get listInOrder;
 }
 
-class PrimaryResidences extends SubsequentableArg<PrimaryResidence> {
-  PrimaryResidences(super.now);
-
+class PrimaryResidences(super.now) extends SubsequentableArg<PrimaryResidence> {
   /// Internally, the ordering reflects the user's input, but callers still
   /// always receive the [listInOrder] in order of increasing starting
   /// [PrimaryResidence.age].
   @override
-  List<PrimaryResidence> get listInOrder => _now.sortedOn((residence) => residence.age.now);
+  List<PrimaryResidence> get listInOrder =>
+      _now.sortedOn((residence) => residence.age.now);
 }
 
-class Jobs extends SubsequentableArg<Job> {
-  Jobs(super.now);
-
+class Jobs(super.now) extends SubsequentableArg<Job> {
   @override
   List<Job> get listInOrder => _now.sortedOn((job) => job.age.now);
 }
 
-class PliantContractType extends MutableSimulatorArg<ResidenceContractType> {
-  PliantContractType(super.now);
-
+class PliantContractType(super.now)
+    extends MutableSimulatorArg<ResidenceContractType> {
   ResidenceContractType get now => _now;
 
-  factory PliantContractType.rent() =>
-      PliantContractType(ResidenceContractType.RentalContract);
+  factory rent() => PliantContractType(ResidenceContractType.RentalContract);
 
-  factory PliantContractType.buy() =>
-      PliantContractType(ResidenceContractType.HomeOwnership);
+  factory buy() => PliantContractType(ResidenceContractType.HomeOwnership);
 }
 
-enum ResidenceContractType {
+enum ResidenceContractType({
+  required final String name,
+  required final double minimum,
+  required final double maximum,
+  required final double defaultValue,
+}) {
   HomeOwnership(name: 'House', minimum: 2e5, maximum: 2e6, defaultValue: 4e5),
   RentalContract(name: 'Rent', minimum: 500, maximum: 7000, defaultValue: 3000);
-
-  const ResidenceContractType({
-    required this.name,
-    required this.minimum,
-    required this.maximum,
-    required this.defaultValue,
-  });
-
-  final String name;
-  final double minimum;
-  final double maximum;
-  final double defaultValue;
 
   bool get isRental => this == ResidenceContractType.RentalContract;
 
   String get serialize => name;
 
-  factory ResidenceContractType.deserialize(String s) =>
+  factory deserialize(String s) =>
       ResidenceContractType.values.firstWhere((element) => element.name == s);
 }
 
-class PrimaryResidence implements Subsequentable {
-  const PrimaryResidence({
-    required this.age,
-    required this.value,
-    required this.contractType,
-    required this.downPayment,
-    required this.mortgageApr,
-    required this.housingAppreciateRate,
-    required this.propertyTaxRate,
-    required this.insurancePrice,
-    required this.hoaPrice,
-  });
-
-  final Int age;
-  final Dollars value;
-  final Percent downPayment;
-  final PliantContractType contractType;
-  final Percent mortgageApr;
-  final Percent housingAppreciateRate;
-  final Percent propertyTaxRate;
-  final Dollars insurancePrice;
-  final Dollars hoaPrice;
-
-  factory PrimaryResidence.buy({
+class const PrimaryResidence({
+  required final Int age,
+  required final Dollars value,
+  required final PliantContractType contractType,
+  required final Percent downPayment,
+  required final Percent mortgageApr,
+  required final Percent housingAppreciateRate,
+  required final Percent propertyTaxRate,
+  required final Dollars insurancePrice,
+  required final Dollars hoaPrice,
+}) implements Subsequentable {
+  factory buy({
     required int age,
     required Dollars price,
     required Percent downPayment,
@@ -213,45 +172,40 @@ class PrimaryResidence implements Subsequentable {
     required Percent propertyTaxRate,
     required Dollars insurancePrice,
     required Dollars hoaPrice,
-  }) =>
-      PrimaryResidence(
-        age: Int(age),
-        value: price,
-        contractType: PliantContractType.buy(),
-        downPayment: downPayment,
-        mortgageApr: mortgageApr,
-        housingAppreciateRate: housingAppreciateRate,
-        propertyTaxRate: propertyTaxRate,
-        insurancePrice: insurancePrice,
-        hoaPrice: hoaPrice,
-      );
+  }) => PrimaryResidence(
+    age: Int(age),
+    value: price,
+    contractType: PliantContractType.buy(),
+    downPayment: downPayment,
+    mortgageApr: mortgageApr,
+    housingAppreciateRate: housingAppreciateRate,
+    propertyTaxRate: propertyTaxRate,
+    insurancePrice: insurancePrice,
+    hoaPrice: hoaPrice,
+  );
 
-  factory PrimaryResidence.rent({
-    required int age,
-    required Dollars rent,
-  }) =>
-      PrimaryResidence(
-        age: Int(age),
-        value: rent,
-        contractType: PliantContractType.rent(),
-        downPayment: 0.percent,
-        mortgageApr: 0.percent,
-        housingAppreciateRate: 0.percent,
-        propertyTaxRate: 0.percent,
-        insurancePrice: Dollars(0),
-        hoaPrice: Dollars(0),
-      );
+  factory rent({required int age, required Dollars rent}) => PrimaryResidence(
+    age: Int(age),
+    value: rent,
+    contractType: PliantContractType.rent(),
+    downPayment: 0.percent,
+    mortgageApr: 0.percent,
+    housingAppreciateRate: 0.percent,
+    propertyTaxRate: 0.percent,
+    insurancePrice: Dollars(0),
+    hoaPrice: Dollars(0),
+  );
 
   PrimaryResidence get createSubsequent => PrimaryResidence.buy(
-        age: age.now + 5,
-        price: isRental ? 400.kiloDollars : value + 300.kiloDollars,
-        downPayment: 20.percent,
-        mortgageApr: mortgageApr,
-        housingAppreciateRate: housingAppreciateRate,
-        propertyTaxRate: propertyTaxRate,
-        insurancePrice: insurancePrice,
-        hoaPrice: hoaPrice,
-      );
+    age: age.now + 5,
+    price: isRental ? 400.kiloDollars : value + 300.kiloDollars,
+    downPayment: 20.percent,
+    mortgageApr: mortgageApr,
+    housingAppreciateRate: housingAppreciateRate,
+    propertyTaxRate: propertyTaxRate,
+    insurancePrice: insurancePrice,
+    hoaPrice: hoaPrice,
+  );
 
   bool get isRental => contractType.now.isRental;
 
@@ -279,15 +233,10 @@ class PrimaryResidence implements Subsequentable {
   String toString() => '${contractType.now.name} $value';
 }
 
-class Job implements Subsequentable {
-  const Job({required this.age, required this.salary});
-
-  factory Job.create({required int age, required Dollars salary}) =>
+class const Job({required final Int age, required final Dollars salary})
+    implements Subsequentable {
+  factory create({required int age, required Dollars salary}) =>
       Job(age: Int(age), salary: salary);
-
-  final Int age;
-
-  final Dollars salary;
 
   Job get createSubsequent =>
       Job.create(age: age.now + 4, salary: salary + 30.kiloDollars);

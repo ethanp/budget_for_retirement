@@ -9,34 +9,22 @@ import 'residences.dart';
 import 'retirement_accounts.dart';
 import 'simulation_params.dart';
 
-class SimulationStateMachine {
-  SimulationStateMachine._({
-    required this.economy,
-    required this.lifeEvents,
-    required this.spending,
-    required this.salary,
-    required this.traditionalRetirement,
-    required this.rothRetirement,
-    required this.taxableInvestments,
-    required this.nonMortgageDebt,
-    required this.residences,
-  });
-
-  final Economy economy;
-  final LifeEvents lifeEvents;
-  final NonHouseExpenses spending;
-  final Earnings salary;
-  final TraditionalRetirement traditionalRetirement;
-  final RothRetirement rothRetirement;
-  final TaxableInvestments taxableInvestments;
-  final NonMortgageDebt nonMortgageDebt;
-  final Residences residences;
-
+class SimulationStateMachine._({
+  required final Economy economy,
+  required final LifeEvents lifeEvents,
+  required final NonHouseExpenses spending,
+  required final Earnings salary,
+  required final TraditionalRetirement traditionalRetirement,
+  required final RothRetirement rothRetirement,
+  required final TaxableInvestments taxableInvestments,
+  required final NonMortgageDebt nonMortgageDebt,
+  required final Residences residences,
+}) {
   /// Combined retirement savings for display purposes.
   double get totalRetirementSavings =>
       traditionalRetirement.grossValue + rothRetirement.grossValue;
 
-  factory SimulationStateMachine.createFrom(SimulationParams args) {
+  factory createFrom(SimulationParams args) {
     return SimulationStateMachine._(
       economy: Economy(
         effectiveIncomeTaxRate: args.effectiveIncomeTaxRate,
@@ -190,8 +178,10 @@ class SimulationStateMachine {
     // 3. Spend using Traditional retirement (if retired and age 59+).
     if (debtRemaining > 0 && lifeEvents.isRetired && !isEarlyWithdrawal) {
       final smaller = math.min(traditionalRetirement.grossValue, debtRemaining);
-      traditionalRetirement.liquidateAndSpend(smaller,
-          isEarlyWithdrawal: false);
+      traditionalRetirement.liquidateAndSpend(
+        smaller,
+        isEarlyWithdrawal: false,
+      );
       debtRemaining -= smaller;
     }
 
@@ -226,9 +216,7 @@ class SimulationStateMachine {
   }
 }
 
-class RemainingMoney {
-  const RemainingMoney(this.incomeRemaining, this.stillOwed);
-
-  final double incomeRemaining;
-  final double stillOwed;
-}
+class const RemainingMoney(
+  final double incomeRemaining,
+  final double stillOwed,
+);

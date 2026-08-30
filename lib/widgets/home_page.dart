@@ -7,17 +7,11 @@ import 'package:flutter/material.dart';
 
 import 'sliders/sliders.dart';
 
-class MainTab {
-  const MainTab({
-    required this.icon,
-    required this.label,
-    required this.screen,
-  });
-
-  final IconData icon;
-  final String label;
-  final Widget screen;
-}
+class const MainTab({
+  required final IconData icon,
+  required final String label,
+  required final Widget screen,
+});
 
 const _mainTabs = <MainTab>[
   MainTab(
@@ -25,24 +19,16 @@ const _mainTabs = <MainTab>[
     label: 'Sliders',
     screen: Sliders(showInsightsOverlay: true),
   ),
-  MainTab(
-    icon: Icons.bar_chart,
-    label: 'Chart',
-    screen: _ChartTab(),
-  ),
-  MainTab(
-    icon: Icons.view_list,
-    label: 'Details',
-    screen: _DetailsTab(),
-  ),
+  MainTab(icon: Icons.bar_chart, label: 'Chart', screen: _ChartTab()),
+  MainTab(icon: Icons.view_list, label: 'Details', screen: _DetailsTab()),
 ];
 
-class HomePage extends StatefulWidget {
+class HomePage() extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState() extends State<HomePage> {
   int _selectedTabIndex = 0;
   final _navigatorKeys = List<GlobalKey<NavigatorState>>.generate(
     _mainTabs.length,
@@ -60,7 +46,9 @@ class _HomePageState extends State<HomePage> {
         ],
         onSelected: (index) {
           if (index == _selectedTabIndex) {
-            _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
+            _navigatorKeys[index].currentState?.popUntil(
+              (route) => route.isFirst,
+            );
             return;
           }
           setState(() => _selectedTabIndex = index);
@@ -83,9 +71,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _ChartTab extends StatelessWidget {
-  const _ChartTab();
-
+class const _ChartTab() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -99,9 +85,7 @@ class _ChartTab extends StatelessWidget {
   }
 }
 
-class _DetailsTab extends StatelessWidget {
-  const _DetailsTab();
-
+class const _DetailsTab() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -112,11 +96,7 @@ class _DetailsTab extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                LifespanCard(),
-                MinRetirementCard(),
-                FinalGrossCard(),
-              ],
+              children: [LifespanCard(), MinRetirementCard(), FinalGrossCard()],
             ),
             HousingCard(),
             ForecastTableCard(),

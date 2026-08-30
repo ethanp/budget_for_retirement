@@ -8,16 +8,13 @@ import 'package:provider/provider.dart';
 
 import 'sliders_list_view.dart';
 
-class Sliders extends StatefulWidget {
-  const Sliders({this.showInsightsOverlay = false});
-
-  final bool showInsightsOverlay;
-
+class const Sliders({final bool showInsightsOverlay = false})
+    extends StatefulWidget {
   @override
   State<Sliders> createState() => _SlidersState();
 }
 
-class _SlidersState extends State<Sliders> {
+class _SlidersState() extends State<Sliders> {
   late bool _showInsightsOverlay;
 
   @override
@@ -33,7 +30,8 @@ class _SlidersState extends State<Sliders> {
   @override
   Widget build(BuildContext context) {
     final safeAreaTop = MediaQuery.of(context).padding.top;
-    final double listTopPadding = safeAreaTop +
+    final double listTopPadding =
+        safeAreaTop +
         headerHeight +
         (_showInsightsOverlay ? insightsTopOffset + insightsHeight : 0);
     final colors = AppColors.of(context);
@@ -53,10 +51,12 @@ class _SlidersState extends State<Sliders> {
   }
 
   static Widget _slidersListView(double topPadding) {
-    return Column(children: [
-      SizedBox(height: topPadding),
-      Expanded(child: SlidersListView()),
-    ]);
+    return Column(
+      children: [
+        SizedBox(height: topPadding),
+        Expanded(child: SlidersListView()),
+      ],
+    );
   }
 
   Widget _insightsOverlay(BuildContext context, double safeAreaTop) {
@@ -80,7 +80,9 @@ class _SlidersState extends State<Sliders> {
         width: double.infinity,
         height: headerHeight,
         decoration: BoxDecoration(
-          color: colors.surfaceForHealth(isHealthy: simulation.isFinanciallyHealthy),
+          color: colors.surfaceForHealth(
+            isHealthy: simulation.isFinanciallyHealthy,
+          ),
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
         child: Padding(
@@ -93,10 +95,7 @@ class _SlidersState extends State<Sliders> {
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _title(context),
-                    _subtitle(context),
-                  ],
+                  children: [_title(context), _subtitle(context)],
                 ),
               ),
               _resetButton(context),
@@ -141,7 +140,9 @@ class _SlidersState extends State<Sliders> {
             end: Alignment.bottomCenter,
             colors: [
               colors.backgroundDepth1,
-              colors.surfaceForHealth(isHealthy: simulation.isFinanciallyHealthy),
+              colors.surfaceForHealth(
+                isHealthy: simulation.isFinanciallyHealthy,
+              ),
             ],
           ),
         ),
@@ -173,17 +174,11 @@ class _SlidersState extends State<Sliders> {
   }
 }
 
-class _HeaderButton extends StatelessWidget {
-  const _HeaderButton({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-
+class const _HeaderButton({
+  required final IconData icon,
+  required final String label,
+  required final VoidCallback onPressed,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);

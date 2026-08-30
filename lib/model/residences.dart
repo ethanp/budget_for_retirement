@@ -5,17 +5,11 @@ import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
 
 import 'house_expenses.dart';
 
-class Residences {
-  const Residences({
-    required this.properties,
-    required this.inflationRate,
-    required this.effectiveIncomeTaxRate,
-  });
-
-  final List<PrimaryResidence> properties;
-  final Percent inflationRate;
-  final Percent effectiveIncomeTaxRate;
-
+class const Residences({
+  required final List<PrimaryResidence> properties,
+  required final Percent inflationRate,
+  required final Percent effectiveIncomeTaxRate,
+}) {
   double homeEquity(LifeEvents lifeEvents) {
     final PrimaryResidence currentHome = _currentHome(lifeEvents);
 
@@ -29,8 +23,9 @@ class Residences {
     ).equity;
   }
 
-  PrimaryResidence _currentHome(LifeEvents lifeEvents) => properties
-      .lastWhere((element) => element.age.now <= lifeEvents.currentAge);
+  PrimaryResidence _currentHome(LifeEvents lifeEvents) => properties.lastWhere(
+    (element) => element.age.now <= lifeEvents.currentAge,
+  );
 
   double costsThisYear(LifeEvents lifeEvents) {
     final PrimaryResidence currentHome = _currentHome(lifeEvents);
@@ -51,8 +46,11 @@ class Residences {
     }
 
     final annualOutlay = currentHome.isRental
-        ? _appreciated(currentHome.monthlyRent * 12, lifeEvents.yearsSinceStart,
-            currentHome.housingAppreciateRate)
+        ? _appreciated(
+            currentHome.monthlyRent * 12,
+            lifeEvents.yearsSinceStart,
+            currentHome.housingAppreciateRate,
+          )
         : _houseExpenses(
             yearsInHouse: lifeEvents.currentAge - currentHome.age.now,
             purchasePrice: currentHome.price,
@@ -78,8 +76,10 @@ class Residences {
 
   /// "Real" appreciation.
   double _appreciated(
-          double startVal, int numYears, Percent appreciationRate) =>
-      startVal * math.pow(1 + appreciationRate.asDouble, numYears);
+    double startVal,
+    int numYears,
+    Percent appreciationRate,
+  ) => startVal * math.pow(1 + appreciationRate.asDouble, numYears);
 
   HouseExpenses _houseExpenses({
     required int yearsInHouse,

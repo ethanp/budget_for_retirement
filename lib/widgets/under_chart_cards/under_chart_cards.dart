@@ -1,13 +1,15 @@
 import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
-import 'package:budget_for_retirement/util/extensions.dart' show CompactCurrency;
+import 'package:budget_for_retirement/util/extensions.dart'
+    show CompactCurrency;
 import 'package:ethan_utils/ethan_utils.dart';
 import 'package:budget_for_retirement/widgets/insights/insight_metrics.dart';
 import 'package:budget_for_retirement/widgets/line_chart/line_builder.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-abstract class UnderChartCardState<T extends StatefulWidget> extends State<T> {
+abstract class UnderChartCardState<T extends StatefulWidget>()
+    extends State<T> {
   bool folded = false;
 
   final bool expands = true;
@@ -22,13 +24,16 @@ abstract class UnderChartCardState<T extends StatefulWidget> extends State<T> {
         margin: const EdgeInsets.all(4),
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Column(children: [
-            title(context),
-            Center(
+          child: Column(
+            children: [
+              title(context),
+              Center(
                 child: expands && folded
                     ? clickToReveal(context)
-                    : content(context)),
-          ]),
+                    : content(context),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -40,10 +45,7 @@ abstract class UnderChartCardState<T extends StatefulWidget> extends State<T> {
       padding: EdgeInsets.only(top: 4),
       child: Text(
         'Click to reveal',
-        style: TextStyle(
-          fontStyle: FontStyle.italic,
-          color: colors.textColor3,
-        ),
+        style: TextStyle(fontStyle: FontStyle.italic, color: colors.textColor3),
       ),
     );
   }
@@ -68,12 +70,12 @@ abstract class UnderChartCardState<T extends StatefulWidget> extends State<T> {
   Widget content(BuildContext context);
 }
 
-class LifespanCard extends StatefulWidget {
+class LifespanCard() extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _LifespanCardState();
 }
 
-class _LifespanCardState extends UnderChartCardState<LifespanCard> {
+class _LifespanCardState() extends UnderChartCardState<LifespanCard> {
   @override
   Widget title(BuildContext context) =>
       titleStyle(context, 'Lifespan simulated');
@@ -88,20 +90,17 @@ class _LifespanCardState extends UnderChartCardState<LifespanCard> {
     final int endAge = simulation.sliderPositions.endAge.now;
     return Text(
       '$startingAge–to-$endAge',
-      style: TextStyle(
-        fontSize: 20,
-        color: colors.accentPrimary,
-      ),
+      style: TextStyle(fontSize: 20, color: colors.accentPrimary),
     );
   }
 }
 
-class MinRetirementCard extends StatefulWidget {
+class MinRetirementCard() extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _MinRetirementCardState();
 }
 
-class _MinRetirementCardState extends UnderChartCardState<MinRetirementCard> {
+class _MinRetirementCardState() extends UnderChartCardState<MinRetirementCard> {
   @override
   Widget title(BuildContext context) =>
       titleStyle(context, 'Min retirement age');
@@ -120,12 +119,12 @@ class _MinRetirementCardState extends UnderChartCardState<MinRetirementCard> {
   }
 }
 
-class FinalGrossCard extends StatefulWidget {
+class FinalGrossCard() extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _FinalGrossCardState();
 }
 
-class _FinalGrossCardState extends UnderChartCardState<FinalGrossCard> {
+class _FinalGrossCardState() extends UnderChartCardState<FinalGrossCard> {
   @override
   Widget title(BuildContext context) => titleStyle(context, 'Net worth at 95');
 
@@ -143,45 +142,52 @@ class _FinalGrossCardState extends UnderChartCardState<FinalGrossCard> {
   }
 }
 
-class ForecastTableCard extends StatefulWidget {
+class ForecastTableCard() extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _ForecastTableCardState();
 }
 
-class _ForecastTableCardState extends UnderChartCardState<ForecastTableCard> {
+class _ForecastTableCardState() extends UnderChartCardState<ForecastTableCard> {
   @override
   bool folded = true;
 
   @override
   Widget content(BuildContext context) {
     final colors = AppColors.of(context);
-    final List<LineBuilder> horizontalLines =
-        FinancialSimulation.watchFrom(context).latestData.horizontalLines;
+    final List<LineBuilder> horizontalLines = FinancialSimulation.watchFrom(
+      context,
+    ).latestData.horizontalLines;
     final List<FlSpot> firstLinePoints = horizontalLines.first.dataPoints;
 
     final linesTransposedIntoRows = firstLinePoints.indices.map((idx) {
       final age = firstLinePoints[idx].x.floor().toString();
-      final Iterable<String> lineValues =
-          horizontalLines.map((lb) => lb.dataPoints[idx].y.asCompactDollars());
+      final Iterable<String> lineValues = horizontalLines.map(
+        (lb) => lb.dataPoints[idx].y.asCompactDollars(),
+      );
       final List<DataCell> dataCells = [age]
           .followedBy(lineValues)
-          .map((cellValue) => DataCell(Text(
-                cellValue,
-                style: TextStyle(color: colors.textColor2),
-              )))
+          .map(
+            (cellValue) => DataCell(
+              Text(cellValue, style: TextStyle(color: colors.textColor2)),
+            ),
+          )
           .toList();
       return DataRow(cells: dataCells);
     }).toList();
 
     final List<DataColumn> columns = ['Age']
         .followedBy(horizontalLines.map((line) => line.name))
-        .map((lineName) => DataColumn(
-              label: Text(
-                lineName,
-                style: TextStyle(
-                    color: colors.textColor1, fontWeight: FontWeight.w600),
+        .map(
+          (lineName) => DataColumn(
+            label: Text(
+              lineName,
+              style: TextStyle(
+                color: colors.textColor1,
+                fontWeight: FontWeight.w600,
               ),
-            ))
+            ),
+          ),
+        )
         .toList();
 
     return SizedBox(

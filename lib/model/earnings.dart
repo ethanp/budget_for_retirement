@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:budget_for_retirement/model/life_events.dart';
 import 'package:budget_for_retirement/util/extensions.dart';
 
-class Earnings {
+class Earnings() {
   static const int MinimumSocSecAge = 62;
 
   /// Gross [pre-tax] pay.

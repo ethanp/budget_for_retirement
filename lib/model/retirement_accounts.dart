@@ -5,14 +5,13 @@ import 'investment_account.dart';
 
 /// Traditional retirement accounts (401k, Traditional IRA).
 /// Contributions are pre-tax, withdrawals are 100% taxed as ordinary income.
-class TraditionalRetirement extends InvestmentAccount {
-  final double perAnnumTarget;
+class TraditionalRetirement({
+  required final double perAnnumTarget,
+  required double initialGross,
+}) extends InvestmentAccount {
   static final _retirementMarginalRate = 22.percent;
 
-  TraditionalRetirement({
-    required this.perAnnumTarget,
-    required double initialGross,
-  }) : super(grossValue: initialGross);
+  this : super(grossValue: initialGross);
 
   @override
   double taxesOnWithdrawal(double amt, bool isEarlyWithdrawal) {
@@ -24,14 +23,13 @@ class TraditionalRetirement extends InvestmentAccount {
 
 /// Roth retirement accounts (Roth 401k, Roth IRA, HSA for medical).
 /// Contributions are post-tax, qualified withdrawals are tax-free.
-class RothRetirement extends InvestmentAccount {
-  final double perAnnumTarget;
+class RothRetirement({
+  required final double perAnnumTarget,
+  required double initialGross,
+}) extends InvestmentAccount {
   static final _retirementMarginalRate = 22.percent;
 
-  RothRetirement({
-    required this.perAnnumTarget,
-    required double initialGross,
-  }) : super(grossValue: initialGross);
+  this : super(grossValue: initialGross);
 
   @override
   double taxesOnWithdrawal(double amt, bool isEarlyWithdrawal) {
@@ -48,12 +46,10 @@ class RothRetirement extends InvestmentAccount {
 }
 
 /// Combined view of both retirement account types for convenience.
-class RetirementAccounts {
-  final TraditionalRetirement traditional;
-  final RothRetirement roth;
-
-  RetirementAccounts({required this.traditional, required this.roth});
-
+class RetirementAccounts({
+  required final TraditionalRetirement traditional,
+  required final RothRetirement roth,
+}) {
   double get totalGrossValue => traditional.grossValue + roth.grossValue;
 
   void applyReturns(Percent returnRate) {

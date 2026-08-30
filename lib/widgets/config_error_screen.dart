@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ConfigErrorScreen extends StatelessWidget {
-  const ConfigErrorScreen({
-    required this.errorMessage,
-  });
-
-  final String errorMessage;
-
+class const ConfigErrorScreen({required final String errorMessage})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Configuration required'),
-      ),
+      appBar: AppBar(title: const Text('Configuration required')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -47,4 +40,3 @@ class ConfigErrorScreen extends StatelessWidget {
     );
   }
 }
-

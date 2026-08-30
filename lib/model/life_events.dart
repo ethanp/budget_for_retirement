@@ -1,23 +1,15 @@
 import 'package:ethan_utils/ethan_utils.dart';
 import 'package:budget_for_retirement/util/mutable_simulator_arg.dart';
 
-class LifeEvents {
-  final List<int> ageAtChildren;
-  final int endAge;
-  final List<Job> jobs;
-  final int ageAtRetirement;
-  final int startingAge;
-
-  int currentAge;
-
-  LifeEvents({
-    required this.ageAtChildren,
-    required this.jobs,
-    required this.ageAtRetirement,
-    required this.endAge,
-    required this.startingAge,
-    this.currentAge = -1,
-  }) {
+class LifeEvents({
+  required final List<int> ageAtChildren,
+  required final List<Job> jobs,
+  required final int ageAtRetirement,
+  required final int endAge,
+  required final int startingAge,
+  var int currentAge = -1,
+}) {
+  this {
     // This allows us to run the Dart compiler, but still initialize the [age]
     // to be based on the [startingAge].
     if (currentAge == -1) currentAge = startingAge;

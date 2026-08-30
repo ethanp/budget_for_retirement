@@ -3,13 +3,7 @@ import 'package:flutter/material.dart';
 import 'param_definition.dart';
 
 /// Single source of truth for all simulation parameters.
-class ParamRegistry {
-  ParamRegistry._();
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // JOB FIELD DEFINITIONS
-  // ═══════════════════════════════════════════════════════════════════════════
-
+class ParamRegistry._() {
   static const jobAge = ListFieldDefinition(
     displayName: 'Age hired',
     minimum: 16,
@@ -321,26 +315,26 @@ class ParamRegistry {
   // ═══════════════════════════════════════════════════════════════════════════
 
   static List<ParamDefinition> get allScalar => [
-        // Career
-        ageAtRetirement,
-        effectiveIncomeTaxRate,
-        initialTaxableInvestmentsGross,
-        initialTraditionalRetirement,
-        initialRothRetirement,
-        // Lifestyle
-        monthlyNonFoodBudget,
-        monthlyFoodBudget,
-        traditionalContributionTarget,
-        rothContributionTarget,
-        // Circumstance
-        realInvestmentReturns,
-        inflationRate,
-        debtApr,
-        // Hidden
-        startingAge,
-        simulationStartingAge,
-        endAge,
-      ];
+    // Career
+    ageAtRetirement,
+    effectiveIncomeTaxRate,
+    initialTaxableInvestmentsGross,
+    initialTraditionalRetirement,
+    initialRothRetirement,
+    // Lifestyle
+    monthlyNonFoodBudget,
+    monthlyFoodBudget,
+    traditionalContributionTarget,
+    rothContributionTarget,
+    // Circumstance
+    realInvestmentReturns,
+    inflationRate,
+    debtApr,
+    // Hidden
+    startingAge,
+    simulationStartingAge,
+    endAge,
+  ];
 
   static List<ParamDefinition> byCategory(ParamCategory cat) =>
       allScalar.where((p) => p.category == cat && p.isSliderVisible).toList();

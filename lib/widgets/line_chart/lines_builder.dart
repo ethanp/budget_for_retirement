@@ -6,10 +6,8 @@ import 'package:flutter/material.dart' show Colors;
 
 import 'line_builder.dart';
 
-class LinesBuilder {
-  LinesBuilder._();
-
-  factory LinesBuilder.empty() => LinesBuilder._();
+class LinesBuilder._() {
+  factory empty() => LinesBuilder._();
 
   final _taxableInvestments = LineBuilder.fromRegistry(
     ParamRegistry.initialTaxableInvestmentsGross,
@@ -55,49 +53,49 @@ class LinesBuilder {
   /// NB: This is the order the legend appears in.
   ///     But it is [luckily] NOT the order that calculations happen in.
   List<LineBuilder> get horizontalLines => [
-        netSavings,
-        _debt,
-        _nonHousingExpenses,
-        _housingExpenses,
-        _traditionalRetirement,
-        _rothRetirement,
-        _earnings,
-        _taxableInvestments,
-        _homeBalance,
-      ];
+    netSavings,
+    _debt,
+    _nonHousingExpenses,
+    _housingExpenses,
+    _traditionalRetirement,
+    _rothRetirement,
+    _earnings,
+    _taxableInvestments,
+    _homeBalance,
+  ];
 
   void addYear(SimulationStateMachine lifeState) => horizontalLines.forEach(
-      (lineBuilder) => lineBuilder.appendDataPointsExtractedFrom(lifeState));
+    (lineBuilder) => lineBuilder.appendDataPointsExtractedFrom(lifeState),
+  );
 
   static List<VerticalLineBuilder> verticalLines(
     SimulationParams initialState,
-  ) =>
-      [
-        VerticalLineBuilder(
-          name: 'Retire',
-          color: Colors.blueGrey.withOpacity(.7),
-          xValue: initialState.ageAtRetirement.toDouble(),
-        ),
-        ...initialState.jobs.listInOrder.map(
-          (job) => VerticalLineBuilder(
-            name: 'Job ' + job.age.toString(),
-            color: Colors.blueGrey.withOpacity(.7),
-            xValue: job.age.toDouble(),
-          ),
-        ),
-        ...initialState.children.currentAges.map(
-          (age) => VerticalLineBuilder(
-            name: 'Child ' + age.toString(),
-            color: Colors.orange,
-            xValue: age.toDouble(),
-          ),
-        ),
-        ...initialState.primaryResidences.listInOrder.map(
-          (PrimaryResidence housePurchase) => VerticalLineBuilder(
-            name: housePurchase.toString(),
-            color: Colors.teal.withOpacity(.7),
-            xValue: housePurchase.age.toDouble(),
-          ),
-        ),
-      ];
+  ) => [
+    VerticalLineBuilder(
+      name: 'Retire',
+      color: Colors.blueGrey.withOpacity(.7),
+      xValue: initialState.ageAtRetirement.toDouble(),
+    ),
+    ...initialState.jobs.listInOrder.map(
+      (job) => VerticalLineBuilder(
+        name: 'Job ' + job.age.toString(),
+        color: Colors.blueGrey.withOpacity(.7),
+        xValue: job.age.toDouble(),
+      ),
+    ),
+    ...initialState.children.currentAges.map(
+      (age) => VerticalLineBuilder(
+        name: 'Child ' + age.toString(),
+        color: Colors.orange,
+        xValue: age.toDouble(),
+      ),
+    ),
+    ...initialState.primaryResidences.listInOrder.map(
+      (PrimaryResidence housePurchase) => VerticalLineBuilder(
+        name: housePurchase.toString(),
+        color: Colors.teal.withOpacity(.7),
+        xValue: housePurchase.age.toDouble(),
+      ),
+    ),
+  ];
 }

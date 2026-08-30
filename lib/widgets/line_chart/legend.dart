@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'line_builder.dart';
 import 'lines_builder.dart';
 
-class Legend extends StatelessWidget {
+class Legend() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,8 +32,7 @@ class Legend extends StatelessWidget {
   }
 
   Iterable<Widget> _legendItems(BuildContext context) {
-    return _latestData(context)
-        .horizontalLines
+    return _latestData(context).horizontalLines
         .map<Widget>((l) => _LegendItem(l));
   }
 
@@ -41,11 +40,7 @@ class Legend extends StatelessWidget {
       FinancialSimulation.dontWatch(context).latestData;
 }
 
-class _LegendItem extends StatelessWidget {
-  const _LegendItem(this.line);
-
-  final LineBuilder line;
-
+class const _LegendItem(final LineBuilder line) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -65,18 +60,12 @@ class _LegendItem extends StatelessWidget {
 
   Widget _name() {
     return Expanded(
-      child: Text(
-        line.name,
-        style: TextStyle(fontSize: 14),
-        maxLines: 2,
-      ),
+      child: Text(line.name, style: TextStyle(fontSize: 14), maxLines: 2),
     );
   }
 }
 
-class _LegendItemSeparator extends StatelessWidget {
-  const _LegendItemSeparator();
-
+class const _LegendItemSeparator() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(

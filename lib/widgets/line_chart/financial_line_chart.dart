@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:ethan_utils/ethan_utils.dart';
 
 import 'package:budget_for_retirement/model/financial_simulation.dart';
@@ -12,9 +13,7 @@ import 'package:flutter/material.dart';
 import 'legend.dart';
 import 'lines_builder.dart';
 
-class FinancialLineChart extends StatelessWidget {
-  const FinancialLineChart();
-
+class const FinancialLineChart() extends StatelessWidget {
   static const maxY = 5e6;
 
   @override
@@ -28,15 +27,19 @@ class FinancialLineChart extends StatelessWidget {
     return Card(
       child: Padding(
         padding: padding,
-        child: Column(children: [
-          if (!isLandscape) _chartTitle(context),
-          Expanded(
-            child: Row(children: [
-              Expanded(child: _lineChart(context)),
-              Legend(),
-            ]),
-          ),
-        ]),
+        child: Column(
+          children: [
+            if (!isLandscape) _chartTitle(context),
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(child: _lineChart(context)),
+                  Legend(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -84,8 +87,8 @@ class FinancialLineChart extends StatelessWidget {
       FinancialSimulation.dontWatch(context).sliderPositions;
 
   List<LineChartBarData> _lineData(BuildContext context) {
-    final List<LineBuilder> horizontalLines =
-        _latestData(context).horizontalLines;
+    final List<LineBuilder> horizontalLines = _latestData(context)
+        .horizontalLines;
     final List<VerticalLineBuilder> verticalLines = _verticalLines(context);
     return (horizontalLines + verticalLines).mapL(_line);
   }
@@ -134,9 +137,9 @@ class FinancialLineChart extends StatelessWidget {
               // Label the start of each decade.
               ? value.round().toString()
               : value == labelValue
-                  // Label the axis.
-                  ? (isLandscape ? 'Age' : '\nAge')
-                  : '';
+              // Label the axis.
+              ? (isLandscape ? 'Age' : '\nAge')
+              : '';
           final TextStyle style = value == labelValue ? labelStyle : valueStyle;
           return Text(text, style: style);
         },
@@ -247,7 +250,7 @@ class FinancialLineChart extends StatelessWidget {
                       color: Colors.black,
                       fontStyle: FontStyle.italic,
                     ),
-                  )
+                  ),
               ],
             );
           }),

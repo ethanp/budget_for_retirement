@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 
 /// A compact pill badge showing metadata (date and source) for a config value.
 /// Displays the date at a glance; tap to reveal source in a dialog.
-class MetadataBadge extends StatelessWidget {
-  const MetadataBadge({required this.metadata});
-
-  final ConfigMetadata metadata;
-
+class const MetadataBadge({required final ConfigMetadata metadata})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -46,8 +43,10 @@ class MetadataBadge extends StatelessWidget {
           children: [
             Icon(Icons.info_outline, size: 20, color: colors.accentPrimary),
             const SizedBox(width: 8),
-            Text('Source',
-                style: TextStyle(fontSize: 16, color: colors.textColor1)),
+            Text(
+              'Source',
+              style: TextStyle(fontSize: 16, color: colors.textColor1),
+            ),
           ],
         ),
         content: Column(

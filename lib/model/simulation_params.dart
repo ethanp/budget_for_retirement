@@ -6,32 +6,23 @@ import 'param_definition.dart';
 import 'param_registry.dart';
 
 /// Exception thrown when config parsing fails.
-class ConfigParseException implements Exception {
-  ConfigParseException(this.message);
-  final String message;
+class ConfigParseException(final String message) implements Exception {
   @override
   String toString() => 'ConfigParseException: $message';
 }
 
 /// Dynamic parameter storage that uses [ParamRegistry] as source of truth.
 /// Parses directly from JSON config.
-class SimulationParams {
+class SimulationParams._({
+  required var Jobs jobs,
+  required var Children children,
+  required var PrimaryResidences primaryResidences,
+  required final Map<String, ConfigMetadata> _metadata,
+}) {
   final Map<String, SlidableSimulatorArg> _scalars = {};
-  final Map<String, ConfigMetadata> _metadata;
-
-  Jobs jobs;
-  Children children;
-  PrimaryResidences primaryResidences;
-
-  SimulationParams._({
-    required this.jobs,
-    required this.children,
-    required this.primaryResidences,
-    required Map<String, ConfigMetadata> metadata,
-  }) : _metadata = metadata;
 
   /// Parse directly from JSON config.
-  factory SimulationParams.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     final metadata = <String, ConfigMetadata>{};
 
     // Parse all scalar parameters using registry definitions
@@ -89,9 +80,10 @@ class SimulationParams {
         return (rawValue as num).toDouble().percent;
       case ParamType.dollars:
         if (def.isKiloDollars && rawValue is Map) {
-          final sum = (rawValue as Map<String, dynamic>)
-              .values
-              .fold<double>(0, (a, v) => a + (v as num).toDouble());
+          final sum = (rawValue as Map<String, dynamic>).values.fold<double>(
+            0,
+            (a, v) => a + (v as num).toDouble(),
+          );
           return sum.kiloDollars;
         } else if (def.isKiloDollars) {
           return (rawValue as num).toDouble().kiloDollars;
@@ -106,13 +98,15 @@ class SimulationParams {
 
   static Jobs _parseJobs(Map<String, dynamic> json) {
     final list = _extractList(json, 'jobs');
-    return Jobs(list.map((item) {
-      final m = item as Map<String, dynamic>;
-      return Job.create(
-        age: (m['age'] as num).toInt(),
-        salary: Dollars((m['salary'] as num).toDouble()),
-      );
-    }).toList());
+    return Jobs(
+      list.map((item) {
+        final m = item as Map<String, dynamic>;
+        return Job.create(
+          age: (m['age'] as num).toInt(),
+          salary: Dollars((m['salary'] as num).toDouble()),
+        );
+      }).toList(),
+    );
   }
 
   static Children _parseChildren(Map<String, dynamic> json) {
@@ -122,29 +116,32 @@ class SimulationParams {
 
   static PrimaryResidences _parseResidences(Map<String, dynamic> json) {
     final list = _extractList(json, 'primaryResidences');
-    return PrimaryResidences(list.map((item) {
-      final m = item as Map<String, dynamic>;
-      final typeName = (m['type'] as String).toLowerCase();
-      final age = (m['age'] as num).toInt();
+    return PrimaryResidences(
+      list.map((item) {
+        final m = item as Map<String, dynamic>;
+        final typeName = (m['type'] as String).toLowerCase();
+        final age = (m['age'] as num).toInt();
 
-      if (typeName == 'buy') {
-        return PrimaryResidence.buy(
+        if (typeName == 'buy') {
+          return PrimaryResidence.buy(
+            age: age,
+            price: Dollars((m['price'] as num).toDouble()),
+            downPayment: (m['downPaymentPercent'] as num).toDouble().percent,
+            mortgageApr: (m['mortgageApr'] as num).toDouble().percent,
+            housingAppreciateRate: (m['housingAppreciateRate'] as num)
+                .toDouble()
+                .percent,
+            propertyTaxRate: (m['propertyTaxRate'] as num).toDouble().percent,
+            insurancePrice: Dollars((m['insurancePrice'] as num).toDouble()),
+            hoaPrice: Dollars((m['hoaPrice'] as num).toDouble()),
+          );
+        }
+        return PrimaryResidence.rent(
           age: age,
-          price: Dollars((m['price'] as num).toDouble()),
-          downPayment: (m['downPaymentPercent'] as num).toDouble().percent,
-          mortgageApr: (m['mortgageApr'] as num).toDouble().percent,
-          housingAppreciateRate:
-              (m['housingAppreciateRate'] as num).toDouble().percent,
-          propertyTaxRate: (m['propertyTaxRate'] as num).toDouble().percent,
-          insurancePrice: Dollars((m['insurancePrice'] as num).toDouble()),
-          hoaPrice: Dollars((m['hoaPrice'] as num).toDouble()),
+          rent: Dollars((m['rent'] as num).toDouble()),
         );
-      }
-      return PrimaryResidence.rent(
-        age: age,
-        rent: Dollars((m['rent'] as num).toDouble()),
-      );
-    }).toList());
+      }).toList(),
+    );
   }
 
   static List<dynamic> _extractList(Map<String, dynamic> json, String key) {

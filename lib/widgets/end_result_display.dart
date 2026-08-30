@@ -3,7 +3,7 @@ import 'package:budget_for_retirement/util/extensions.dart';
 import 'package:flutter/material.dart';
 
 /// Tells user whether they "won" or "lost" in under 3 seconds.
-class EndResultDisplay extends StatelessWidget {
+class EndResultDisplay() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final simulationData = FinancialSimulation.watchFrom(context).latestData;

@@ -3,9 +3,7 @@ import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/widgets/insights/insight_metrics.dart';
 import 'package:flutter/material.dart';
 
-class SliderInsights extends StatelessWidget {
-  const SliderInsights();
-
+class const SliderInsights() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -16,7 +14,9 @@ class SliderInsights extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: colors.surfaceForHealth(isHealthy: simulation.isFinanciallyHealthy),
+        color: colors.surfaceForHealth(
+          isHealthy: simulation.isFinanciallyHealthy,
+        ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: colors.borderDepth1, width: 0.5),
         boxShadow: [
@@ -69,17 +69,11 @@ class SliderInsights extends StatelessWidget {
   }
 }
 
-class _InsightTile extends StatelessWidget {
-  const _InsightTile({
-    required this.label,
-    required this.value,
-    required this.valueColor,
-  });
-
-  final String label;
-  final String value;
-  final Color valueColor;
-
+class const _InsightTile({
+  required final String label,
+  required final String value,
+  required final Color valueColor,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);

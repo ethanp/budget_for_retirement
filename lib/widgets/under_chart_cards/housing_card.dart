@@ -9,12 +9,12 @@ import 'package:flutter/material.dart';
 
 import 'under_chart_cards.dart';
 
-class HousingCard extends StatefulWidget {
+class HousingCard() extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _HousingCardState();
 }
 
-class _HousingCardState extends UnderChartCardState<HousingCard> {
+class _HousingCardState() extends UnderChartCardState<HousingCard> {
   @override
   bool folded = true;
 
@@ -25,19 +25,26 @@ class _HousingCardState extends UnderChartCardState<HousingCard> {
   @override
   Widget content(BuildContext context) {
     final colors = AppColors.of(context);
-    final SimulationParams sliders =
-        FinancialSimulation.watchFrom(context).sliderPositions;
+    final SimulationParams sliders = FinancialSimulation.watchFrom(context)
+        .sliderPositions;
 
-    final List<DataColumn> tableColumnHeaders = <String>[
-      'Age',
-      'Price',
-      'Down',
-      ...[0, 10, 20, 30, 50].map((milestone) => '$milestone yrs'),
-    ].mapL((s) => DataColumn(
-          label: Text(s,
+    final List<DataColumn> tableColumnHeaders =
+        <String>[
+          'Age',
+          'Price',
+          'Down',
+          ...[0, 10, 20, 30, 50].map((milestone) => '$milestone yrs'),
+        ].mapL(
+          (s) => DataColumn(
+            label: Text(
+              s,
               style: TextStyle(
-                  color: colors.textColor1, fontWeight: FontWeight.w600)),
-        ));
+                color: colors.textColor1,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
 
     List<DataRow> houseData(PrimaryResidence residence) =>
         _HousingCardRowsBuilder(residence, sliders, colors).build;
@@ -59,47 +66,59 @@ class _HousingCardState extends UnderChartCardState<HousingCard> {
   }
 }
 
-class _HousingCardRowsBuilder {
-  _HousingCardRowsBuilder(this.residence, this.sliders, this.colors);
-
-  final PrimaryResidence residence;
-  final SimulationParams sliders;
-  final AppColors colors;
-
+class _HousingCardRowsBuilder(
+  final PrimaryResidence residence,
+  final SimulationParams sliders,
+  final AppColors colors,
+) {
   List<DataRow> get build => [
-        DataRow(cells: _combinedRow(sliders)),
-        DataRow(
-          cells:
-              _getARow('value', sliders, (h) => h.currentValue * 12, residence),
-        ),
-        DataRow(
-          cells: _getARow('insurance', sliders, (h) => h.insurance, residence),
-        ),
-        DataRow(
-          cells:
-              _getARow('maintenance', sliders, (h) => h.maintenance, residence),
-        ),
-        DataRow(
-          cells: _getARow('mortgage', sliders,
-              (h) => h.realAnnualMortgagePayment, residence),
-        ),
-        DataRow(
-          cells: _getARow('taxes', sliders, (h) => h.taxes, residence),
-        ),
-      ];
+    DataRow(cells: _combinedRow(sliders)),
+    DataRow(
+      cells: _getARow('value', sliders, (h) => h.currentValue * 12, residence),
+    ),
+    DataRow(
+      cells: _getARow('insurance', sliders, (h) => h.insurance, residence),
+    ),
+    DataRow(
+      cells: _getARow('maintenance', sliders, (h) => h.maintenance, residence),
+    ),
+    DataRow(
+      cells: _getARow(
+        'mortgage',
+        sliders,
+        (h) => h.realAnnualMortgagePayment,
+        residence,
+      ),
+    ),
+    DataRow(cells: _getARow('taxes', sliders, (h) => h.taxes, residence)),
+  ];
 
   static const yearsOut = [0, 10, 20, 30, 50];
 
   List<DataCell> _combinedRow(SimulationParams sliders) {
     return [
-      DataCell(Text(residence.age.toString(),
-          style: TextStyle(color: colors.textColor1))),
-      DataCell(Text(residence.price.asCompactDollars(),
-          style: TextStyle(color: colors.textColor1))),
-      DataCell(Text(
-        _houseExpenses(sliders, 0, residence).downPaymentAmt.asCompactDollars(),
-        style: TextStyle(color: colors.textColor1),
-      )),
+      DataCell(
+        Text(
+          residence.age.toString(),
+          style: TextStyle(color: colors.textColor1),
+        ),
+      ),
+      DataCell(
+        Text(
+          residence.price.asCompactDollars(),
+          style: TextStyle(color: colors.textColor1),
+        ),
+      ),
+      DataCell(
+        Text(
+          _houseExpenses(
+            sliders,
+            0,
+            residence,
+          ).downPaymentAmt.asCompactDollars(),
+          style: TextStyle(color: colors.textColor1),
+        ),
+      ),
       ...yearsOut.map(
         (int yrs) => DataCell(
           Text(
@@ -123,15 +142,13 @@ class _HousingCardRowsBuilder {
       DataCell(Text('')),
       DataCell(Text('')),
       DataCell(Text(title, style: titleStyle)),
-      ...yearsOut.map(
-        (int yrs) {
-          final allAnnualExpenses = _houseExpenses(sliders, yrs, residence);
-          var fieldMonthlyExpense = getField(allAnnualExpenses) / 12;
-          return DataCell(
-            Text(fieldMonthlyExpense.asCompactDollars(), style: dataStyle),
-          );
-        },
-      ),
+      ...yearsOut.map((int yrs) {
+        final allAnnualExpenses = _houseExpenses(sliders, yrs, residence);
+        var fieldMonthlyExpense = getField(allAnnualExpenses) / 12;
+        return DataCell(
+          Text(fieldMonthlyExpense.asCompactDollars(), style: dataStyle),
+        );
+      }),
     ];
   }
 

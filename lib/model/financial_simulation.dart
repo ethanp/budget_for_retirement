@@ -6,13 +6,14 @@ import 'package:provider/provider.dart';
 import 'simulation_params.dart';
 import 'simulation_state_machine.dart';
 
-class FinancialSimulation extends ChangeNotifier {
-  FinancialSimulation({required this.configJson}) {
+class FinancialSimulation({
+  /// Raw JSON config, kept for reset functionality.
+  required final Map<String, dynamic> configJson,
+}) extends ChangeNotifier {
+  this {
     reset();
   }
 
-  /// Raw JSON config, kept for reset functionality.
-  final Map<String, dynamic> configJson;
   late SimulationParams sliderPositions;
   var latestData = LinesBuilder.empty();
 
@@ -80,6 +81,7 @@ class FinancialSimulation extends ChangeNotifier {
   bool get isFinanciallyHealthy {
     final netWorthAt45 = buildNetWorthAtAge45InsightData(this);
     final netWorthAtEnd = buildNetWorthInsightData(this);
-    return netWorthAt45.hasPositiveNetWorth && netWorthAtEnd.hasPositiveNetWorth;
+    return netWorthAt45.hasPositiveNetWorth &&
+        netWorthAtEnd.hasPositiveNetWorth;
   }
 }

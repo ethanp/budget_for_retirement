@@ -3,18 +3,13 @@ import 'package:ethan_utils/ethan_utils.dart';
 
 import 'life_events.dart';
 
-class NonHouseExpenses {
-  NonHouseExpenses({
-    required this.monthlyFood,
-    required this.monthlyLifestyle,
-  });
-
+class NonHouseExpenses({
   /// Eating out + eating in.
-  final double monthlyFood;
+  required final double monthlyFood,
 
   /// Includes vacations, healthcare, clothes, etc.
-  final double monthlyLifestyle;
-
+  required final double monthlyLifestyle,
+}) {
   /// Returns the estimated annual non-housing expenses for the current
   /// simulation-year.
   double expensesThisYear(LifeEvents lifeEvents, Economy economy) {
@@ -28,7 +23,7 @@ class NonHouseExpenses {
   }
 }
 
-class _ChildCosts {
+class _ChildCosts() {
   static double monthly(LifeEvents lifeEvents) =>
       lifeEvents.currentChildAges.map(_childAnnualCost).sum / 12.0;
 
@@ -55,7 +50,7 @@ class _ChildCosts {
   }
 }
 
-class _HealthInsurancePremium {
+class _HealthInsurancePremium() {
   /// Source: https://www.google.com/search?q=medicare+age+eligibility
   static const int MedicareMinimumAge = 65;
 

@@ -2,31 +2,18 @@ import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/util/extensions.dart';
 import 'package:flutter/material.dart';
 
-class MinRetirementInsightData {
-  const MinRetirementInsightData({
-    required this.displayValue,
-    required this.color,
-    required this.canRetire,
-  });
+class const MinRetirementInsightData({
+  required final String displayValue,
+  required final Color color,
+  required final bool canRetire,
+});
 
-  final String displayValue;
-  final Color color;
-  final bool canRetire;
-}
-
-class NetWorthInsightData {
-  const NetWorthInsightData({
-    required this.displayValue,
-    required this.color,
-    required this.hasPositiveNetWorth,
-    required this.value,
-  });
-
-  final String displayValue;
-  final Color color;
-  final bool hasPositiveNetWorth;
-  final double value;
-}
+class const NetWorthInsightData({
+  required final String displayValue,
+  required final Color color,
+  required final bool hasPositiveNetWorth,
+  required final double value,
+});
 
 // Colors that work well in both light and dark themes
 const _successColor = Color(0xFF00A896);
@@ -49,9 +36,7 @@ MinRetirementInsightData buildMinRetirementInsightData(
   );
 }
 
-NetWorthInsightData buildNetWorthInsightData(
-  FinancialSimulation simulation,
-) {
+NetWorthInsightData buildNetWorthInsightData(FinancialSimulation simulation) {
   final double finalSavings =
       simulation.latestData.netSavings.dataPoints.last.y;
   final bool endWithSavings = finalSavings >= 0;
@@ -98,4 +83,3 @@ NetWorthInsightData buildNetWorthAtAge45InsightData(
     value: netWorth,
   );
 }
-
