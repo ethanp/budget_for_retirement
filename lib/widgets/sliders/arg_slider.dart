@@ -153,7 +153,7 @@ class ArgSlider({
       child: TextField(
         controller: textEditingController,
         onSubmitted: (String userInput) {
-          final newValue = textFromUser(userInput);
+          final newValue = _parseCompactDollars(userInput);
           if (newValue != null) updateValue(newValue, context);
         },
         decoration: InputDecoration(isDense: true, border: InputBorder.none),
@@ -178,7 +178,7 @@ class ArgSlider({
     );
   }
 
-  double? textFromUser(String userInput) {
+  double? _parseCompactDollars(String userInput) {
     if (userInput.characters.first == '\$') {
       userInput = userInput.substring(1);
     }

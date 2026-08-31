@@ -20,7 +20,7 @@ class _HousingCardState() extends UnderChartCardState<HousingCard> {
 
   @override
   Widget title(BuildContext context) =>
-      titleStyle(context, 'Housing (per month)');
+      cardTitle(context, 'Housing (per month)');
 
   @override
   Widget content(BuildContext context) {
@@ -47,7 +47,7 @@ class _HousingCardState() extends UnderChartCardState<HousingCard> {
         );
 
     List<DataRow> houseData(PrimaryResidence residence) =>
-        _HousingCardRowsBuilder(residence, sliders, colors).build;
+        _HousingMonthlyRows(residence, sliders, colors).rows;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -66,36 +66,58 @@ class _HousingCardState() extends UnderChartCardState<HousingCard> {
   }
 }
 
-class _HousingCardRowsBuilder(
+class _HousingMonthlyRows(
   final PrimaryResidence residence,
   final SimulationParams sliders,
   final AppColors colors,
 ) {
-  List<DataRow> get build => [
-    DataRow(cells: _combinedRow(sliders)),
+  List<DataRow> get rows => [
+    DataRow(cells: _purchaseAndMonthlyTotalsRow(sliders)),
     DataRow(
-      cells: _getARow('value', sliders, (h) => h.currentValue * 12, residence),
+      cells: _monthlyExpenseAtMilestones(
+        'value',
+        sliders,
+        (h) => h.currentValue * 12,
+        residence,
+      ),
     ),
     DataRow(
-      cells: _getARow('insurance', sliders, (h) => h.insurance, residence),
+      cells: _monthlyExpenseAtMilestones(
+        'insurance',
+        sliders,
+        (h) => h.insurance,
+        residence,
+      ),
     ),
     DataRow(
-      cells: _getARow('maintenance', sliders, (h) => h.maintenance, residence),
+      cells: _monthlyExpenseAtMilestones(
+        'maintenance',
+        sliders,
+        (h) => h.maintenance,
+        residence,
+      ),
     ),
     DataRow(
-      cells: _getARow(
+      cells: _monthlyExpenseAtMilestones(
         'mortgage',
         sliders,
         (h) => h.realAnnualMortgagePayment,
         residence,
       ),
     ),
-    DataRow(cells: _getARow('taxes', sliders, (h) => h.taxes, residence)),
+    DataRow(
+      cells: _monthlyExpenseAtMilestones(
+        'taxes',
+        sliders,
+        (h) => h.taxes,
+        residence,
+      ),
+    ),
   ];
 
   static const yearsOut = [0, 10, 20, 30, 50];
 
-  List<DataCell> _combinedRow(SimulationParams sliders) {
+  List<DataCell> _purchaseAndMonthlyTotalsRow(SimulationParams sliders) {
     return [
       DataCell(
         Text(
@@ -130,18 +152,18 @@ class _HousingCardRowsBuilder(
     ];
   }
 
-  List<DataCell> _getARow(
+  List<DataCell> _monthlyExpenseAtMilestones(
     String title,
     SimulationParams sliders,
     double Function(HouseExpenses) getField,
     PrimaryResidence residence,
   ) {
     final dataStyle = TextStyle(color: colors.textColor3);
-    final titleStyle = dataStyle.copyWith(fontStyle: FontStyle.italic);
+    final categoryLabelStyle = dataStyle.copyWith(fontStyle: FontStyle.italic);
     return [
       DataCell(Text('')),
       DataCell(Text('')),
-      DataCell(Text(title, style: titleStyle)),
+      DataCell(Text(title, style: categoryLabelStyle)),
       ...yearsOut.map((int yrs) {
         final allAnnualExpenses = _houseExpenses(sliders, yrs, residence);
         var fieldMonthlyExpense = getField(allAnnualExpenses) / 12;

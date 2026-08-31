@@ -52,7 +52,7 @@ class RetirementAccounts({
 }) {
   double get totalGrossValue => traditional.grossValue + roth.grossValue;
 
-  void applyReturns(Percent returnRate) {
+  void growByReturnRate(Percent returnRate) {
     traditional.increaseBy(percent: returnRate);
     roth.increaseBy(percent: returnRate);
   }

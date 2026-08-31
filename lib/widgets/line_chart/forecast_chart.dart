@@ -5,15 +5,14 @@ import 'package:ethan_utils/ethan_utils.dart';
 import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/model/simulation_params.dart';
 import 'package:budget_for_retirement/util/extensions.dart';
-import 'package:budget_for_retirement/widgets/line_chart/line_builder.dart';
+import 'package:budget_for_retirement/widgets/line_chart/forecast_line.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'legend.dart';
-import 'lines_builder.dart';
+import 'forecast_lines.dart';
 
-class const FinancialLineChart() extends StatelessWidget {
+class const ForecastChart() extends StatelessWidget {
   static const maxY = 5e6;
 
   @override
@@ -29,11 +28,11 @@ class const FinancialLineChart() extends StatelessWidget {
         padding: padding,
         child: Column(
           children: [
-            if (!isLandscape) _chartTitle(context),
+            if (!isLandscape) _forecastTitle(context),
             Expanded(
               child: Row(
                 children: [
-                  Expanded(child: _lineChart(context)),
+                  Expanded(child: _forecastChart(context)),
                   Legend(),
                 ],
               ),
@@ -44,10 +43,10 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  LinesBuilder _latestData(BuildContext context) =>
-      FinancialSimulation.dontWatch(context).latestData;
+  ForecastLines _forecast(BuildContext context) =>
+      FinancialSimulation.dontWatch(context).forecastLines;
 
-  Widget _lineChart(BuildContext context) {
+  Widget _forecastChart(BuildContext context) {
     FinancialSimulation.watchFrom(context);
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
@@ -57,15 +56,13 @@ class const FinancialLineChart() extends StatelessWidget {
       padding: EdgeInsets.all(isLandscape ? 4 : 14),
       child: LineChart(
         LineChartData(
-          lineTouchData: _showTooltip(context),
-          gridData: _gridLines(horizInterval),
-          titlesData: _axisLabels(context, horizInterval),
-          borderData: _borderLines(),
-          lineBarsData: _lineData(context),
-
-          // Define the domain and range of the chart.
-          minX: _initialLifeState(context).simulationStartingAge.now - 2.0,
-          maxX: _initialLifeState(context).endAge.now + 2.0,
+          lineTouchData: _ageAndDollarsTooltip(context),
+          gridData: _decadeAndDollarBandGrid(horizInterval),
+          titlesData: _ageDollarsAndEventLabels(context, horizInterval),
+          borderData: _leftAndBottomBorder(),
+          lineBarsData: _forecastAndEventStrokes(context),
+          minX: _sliderPositions(context).simulationStartingAge.now - 2.0,
+          maxX: _sliderPositions(context).endAge.now + 2.0,
           minY: 0,
           maxY: maxY,
         ),
@@ -73,7 +70,7 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  FlGridData _gridLines(double horizInterval) {
+  FlGridData _decadeAndDollarBandGrid(double horizInterval) {
     return FlGridData(
       show: true,
       horizontalInterval: horizInterval,
@@ -83,20 +80,19 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  SimulationParams _initialLifeState(BuildContext context) =>
+  SimulationParams _sliderPositions(BuildContext context) =>
       FinancialSimulation.dontWatch(context).sliderPositions;
 
-  List<LineChartBarData> _lineData(BuildContext context) {
-    final List<LineBuilder> horizontalLines = _latestData(context)
-        .horizontalLines;
-    final List<VerticalLineBuilder> verticalLines = _verticalLines(context);
-    return (horizontalLines + verticalLines).mapL(_line);
+  List<LineChartBarData> _forecastAndEventStrokes(BuildContext context) {
+    final List<ForecastLine> forecastLines = _forecast(context).inLegendOrder;
+    final List<LifeEventMarker> lifeEventMarkers = _lifeEventMarkers(context);
+    return (forecastLines + lifeEventMarkers).mapL(_solidForecastOrDashedEvent);
   }
 
-  List<VerticalLineBuilder> _verticalLines(BuildContext context) =>
-      LinesBuilder.verticalLines(_initialLifeState(context));
+  List<LifeEventMarker> _lifeEventMarkers(BuildContext context) =>
+      ForecastLines.lifeEventMarkers(_sliderPositions(context));
 
-  FlBorderData _borderLines() {
+  FlBorderData _leftAndBottomBorder() {
     return FlBorderData(
       show: true,
       border: const Border(
@@ -106,18 +102,21 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  FlTitlesData _axisLabels(BuildContext context, double horizInterval) {
+  FlTitlesData _ageDollarsAndEventLabels(
+    BuildContext context,
+    double horizInterval,
+  ) {
     return FlTitlesData(
-      bottomTitles: _labelXAxis(context),
-      leftTitles: _labelYAxis(context, horizInterval),
-      topTitles: _labelVerticalLines(context),
+      bottomTitles: _decadeTicksAndAgeLabel(context),
+      leftTitles: _compactDollarTicks(context, horizInterval),
+      topTitles: _rotatedLifeEventNames(context),
     );
   }
 
-  AxisTitles _labelXAxis(BuildContext context) {
+  AxisTitles _decadeTicksAndAgeLabel(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final labelValue = 58; // somewhere near the middle
+    final labelValue = 58;
     final labelStyle = TextStyle(
       color: Colors.blueGrey,
       fontSize: isLandscape ? 12 : 18,
@@ -134,10 +133,8 @@ class const FinancialLineChart() extends StatelessWidget {
         interval: 1,
         getTitlesWidget: (value, meta) {
           final String text = value % 10 == 0
-              // Label the start of each decade.
               ? value.round().toString()
               : value == labelValue
-              // Label the axis.
               ? (isLandscape ? 'Age' : '\nAge')
               : '';
           final TextStyle style = value == labelValue ? labelStyle : valueStyle;
@@ -147,7 +144,7 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  AxisTitles _labelYAxis(BuildContext context, double horizInterval) {
+  AxisTitles _compactDollarTicks(BuildContext context, double horizInterval) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return AxisTitles(
@@ -167,7 +164,7 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  AxisTitles _labelVerticalLines(BuildContext context) {
+  AxisTitles _rotatedLifeEventNames(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return AxisTitles(
@@ -175,10 +172,10 @@ class const FinancialLineChart() extends StatelessWidget {
         showTitles: true,
         reservedSize: isLandscape ? 12 : 22,
         getTitlesWidget: (value, meta) {
-          final Iterable<VerticalLineBuilder> labels = _verticalLines(context)
+          final Iterable<LifeEventMarker> labels = _lifeEventMarkers(context)
               .where((l) => l.dataPoints.first.x.toInt() == value.toInt());
           return Transform.rotate(
-            angle: pi / 4, // rotate 45 degrees (in radians)
+            angle: pi / 4,
             child: Text(
               labels.isEmpty ? '' : labels.first.name,
               style: TextStyle(
@@ -193,7 +190,7 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  Widget _chartTitle(BuildContext context) {
+  Widget _forecastTitle(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Row(
@@ -201,7 +198,7 @@ class const FinancialLineChart() extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(
-          CupertinoIcons.chart_bar,
+          Icons.bar_chart,
           size: isLandscape ? 20 : 28,
           color: Colors.black,
         ),
@@ -218,31 +215,28 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  LineTouchData _showTooltip(BuildContext context) {
-    final horizontalLines = _latestData(context).horizontalLines;
-    final verticalLines = _verticalLines(context);
+  LineTouchData _ageAndDollarsTooltip(BuildContext context) {
+    final forecastLines = _forecast(context).inLegendOrder;
+    final lifeEventMarkers = _lifeEventMarkers(context);
     return LineTouchData(
       touchTooltipData: LineTouchTooltipData(
-        getTooltipColor: (_) => Colors.white.withOpacity(.9),
+        getTooltipColor: (_) => Colors.white.withValues(alpha: .9),
         fitInsideHorizontally: true,
         fitInsideVertically: true,
         getTooltipItems: (List<LineBarSpot> spotsOnBars) => [
           ...spotsOnBars.map((spotOnBar) {
-            final String string = _tooltipString(
+            final String string = _forecastOrEventCaption(
               spotOnBar,
-              horizontalLines,
-              verticalLines,
+              forecastLines,
+              lifeEventMarkers,
             );
             return LineTooltipItem(
               string,
               TextStyle(
-                color: spotOnBar.bar.color!.withOpacity(1),
+                color: spotOnBar.bar.color!.withValues(alpha: 1),
                 fontSize: 12,
               ),
               children: [
-                // Chart library dictates that #tooltip_items == #touched_spots,
-                // so to show the date as a separate line, we append it to the
-                // last tooltip. Yes, the touched spots are [Equatable].
                 if (spotOnBar == spotsOnBars.last)
                   TextSpan(
                     text: '\nAge: ${spotOnBar.x.toInt()}',
@@ -259,34 +253,30 @@ class const FinancialLineChart() extends StatelessWidget {
     );
   }
 
-  String _tooltipString(
+  String _forecastOrEventCaption(
     LineBarSpot spotOnBar,
-    List<LineBuilder> horizontalLines,
-    List<VerticalLineBuilder> verticalLines,
+    List<ForecastLine> forecastLines,
+    List<LifeEventMarker> lifeEventMarkers,
   ) {
-    // NB: We only know it's horizontal because of the barIndex.
-    final isHorizontal = spotOnBar.barIndex < horizontalLines.length;
-    String string;
-    if (isHorizontal) {
-      final String name = horizontalLines[spotOnBar.barIndex].name;
+    final isForecastLine = spotOnBar.barIndex < forecastLines.length;
+    if (isForecastLine) {
+      final String name = forecastLines[spotOnBar.barIndex].name;
       final String amt = spotOnBar.y.asCompactDollars();
-      string = '$name: $amt';
-    } else {
-      final index = spotOnBar.barIndex - horizontalLines.length;
-      final String name = verticalLines[index].name;
-      string = 'Event: $name';
+      return '$name: $amt';
     }
-    return string;
+    final index = spotOnBar.barIndex - forecastLines.length;
+    final String name = lifeEventMarkers[index].name;
+    return 'Event: $name';
   }
 
-  LineChartBarData _line(LineBuilder line) {
-    final isVertical = line.runtimeType == VerticalLineBuilder;
+  LineChartBarData _solidForecastOrDashedEvent(ForecastLine line) {
+    final isLifeEvent = line is LifeEventMarker;
     return LineChartBarData(
       spots: line.dataPoints,
       color: line.color,
       barWidth: 2,
-      isStrokeCapRound: !isVertical,
-      dashArray: isVertical ? [6, 4] : null,
+      isStrokeCapRound: !isLifeEvent,
+      dashArray: isLifeEvent ? [6, 4] : null,
       dotData: FlDotData(show: false),
     );
   }

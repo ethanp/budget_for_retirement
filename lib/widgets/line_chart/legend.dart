@@ -2,8 +2,8 @@ import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:ethan_utils/ethan_utils.dart';
 import 'package:flutter/material.dart';
 
-import 'line_builder.dart';
-import 'lines_builder.dart';
+import 'forecast_line.dart';
+import 'forecast_lines.dart';
 
 class Legend() extends StatelessWidget {
   @override
@@ -32,24 +32,24 @@ class Legend() extends StatelessWidget {
   }
 
   Iterable<Widget> _legendItems(BuildContext context) {
-    return _latestData(context).horizontalLines
+    return _forecast(context).inLegendOrder
         .map<Widget>((l) => _LegendItem(l));
   }
 
-  LinesBuilder _latestData(BuildContext context) =>
-      FinancialSimulation.dontWatch(context).latestData;
+  ForecastLines _forecast(BuildContext context) =>
+      FinancialSimulation.dontWatch(context).forecastLines;
 }
 
-class const _LegendItem(final LineBuilder line) extends StatelessWidget {
+class const _LegendItem(final ForecastLine line) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(children: [_colorCode(), _name()]),
+      child: Row(children: [_lineColorSwatch(), _name()]),
     );
   }
 
-  Widget _colorCode() {
+  Widget _lineColorSwatch() {
     return Container(
       width: 11,
       height: 8,

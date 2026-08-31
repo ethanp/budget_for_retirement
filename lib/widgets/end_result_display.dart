@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 class EndResultDisplay() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final simulationData = FinancialSimulation.watchFrom(context).latestData;
-    final finalPoint = simulationData.netSavings.dataPoints.last;
+    final forecastLines = FinancialSimulation.watchFrom(context).forecastLines;
+    final finalPoint = forecastLines.netWorth.dataPoints.last;
     final finalSavings = finalPoint.y;
     final endWithSavings = finalSavings > 0;
     final finalCurrency = finalSavings.asCompactDollars();

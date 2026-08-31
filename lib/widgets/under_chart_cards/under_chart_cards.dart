@@ -4,7 +4,7 @@ import 'package:budget_for_retirement/util/extensions.dart'
     show CompactCurrency;
 import 'package:ethan_utils/ethan_utils.dart';
 import 'package:budget_for_retirement/widgets/insights/insight_metrics.dart';
-import 'package:budget_for_retirement/widgets/line_chart/line_builder.dart';
+import 'package:budget_for_retirement/widgets/line_chart/forecast_line.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +29,7 @@ abstract class UnderChartCardState<T extends StatefulWidget>()
               title(context),
               Center(
                 child: expands && folded
-                    ? clickToReveal(context)
+                    ? foldedHint(context)
                     : content(context),
               ),
             ],
@@ -39,7 +39,7 @@ abstract class UnderChartCardState<T extends StatefulWidget>()
     );
   }
 
-  Widget clickToReveal(BuildContext context) {
+  Widget foldedHint(BuildContext context) {
     final colors = AppColors.of(context);
     return Padding(
       padding: EdgeInsets.only(top: 4),
@@ -51,7 +51,7 @@ abstract class UnderChartCardState<T extends StatefulWidget>()
   }
 
   @protected
-  Widget titleStyle(BuildContext context, String text) {
+  Widget cardTitle(BuildContext context, String text) {
     final colors = AppColors.of(context);
     return Text(
       text,
@@ -78,7 +78,7 @@ class LifespanCard() extends StatefulWidget {
 class _LifespanCardState() extends UnderChartCardState<LifespanCard> {
   @override
   Widget title(BuildContext context) =>
-      titleStyle(context, 'Lifespan simulated');
+      cardTitle(context, 'Lifespan simulated');
   @override
   final bool expands = false;
 
@@ -103,7 +103,7 @@ class MinRetirementCard() extends StatefulWidget {
 class _MinRetirementCardState() extends UnderChartCardState<MinRetirementCard> {
   @override
   Widget title(BuildContext context) =>
-      titleStyle(context, 'Min retirement age');
+      cardTitle(context, 'Min retirement age');
 
   @override
   final bool expands = false;
@@ -111,7 +111,7 @@ class _MinRetirementCardState() extends UnderChartCardState<MinRetirementCard> {
   @override
   Widget content(BuildContext context) {
     final simulation = FinancialSimulation.watchFrom(context);
-    final data = buildMinRetirementInsightData(simulation);
+    final data = MinRetirementInsightData.ageOrNever(simulation);
     return Text(
       data.displayValue,
       style: TextStyle(fontSize: 20, color: data.color),
@@ -119,14 +119,14 @@ class _MinRetirementCardState() extends UnderChartCardState<MinRetirementCard> {
   }
 }
 
-class FinalGrossCard() extends StatefulWidget {
+class NetWorthAt95Card() extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _FinalGrossCardState();
+  State<StatefulWidget> createState() => _NetWorthAt95CardState();
 }
 
-class _FinalGrossCardState() extends UnderChartCardState<FinalGrossCard> {
+class _NetWorthAt95CardState() extends UnderChartCardState<NetWorthAt95Card> {
   @override
-  Widget title(BuildContext context) => titleStyle(context, 'Net worth at 95');
+  Widget title(BuildContext context) => cardTitle(context, 'Net worth at 95');
 
   @override
   final bool expands = false;
@@ -134,7 +134,7 @@ class _FinalGrossCardState() extends UnderChartCardState<FinalGrossCard> {
   @override
   Widget content(BuildContext context) {
     final simulation = FinancialSimulation.watchFrom(context);
-    final data = buildNetWorthInsightData(simulation);
+    final data = NetWorthInsightData.at95(simulation);
     return Text(
       data.displayValue,
       style: TextStyle(fontSize: 20, color: data.color),
@@ -154,15 +154,15 @@ class _ForecastTableCardState() extends UnderChartCardState<ForecastTableCard> {
   @override
   Widget content(BuildContext context) {
     final colors = AppColors.of(context);
-    final List<LineBuilder> horizontalLines = FinancialSimulation.watchFrom(
+    final List<ForecastLine> forecastLines = FinancialSimulation.watchFrom(
       context,
-    ).latestData.horizontalLines;
-    final List<FlSpot> firstLinePoints = horizontalLines.first.dataPoints;
+    ).forecastLines.inLegendOrder;
+    final List<FlSpot> firstLinePoints = forecastLines.first.dataPoints;
 
-    final linesTransposedIntoRows = firstLinePoints.indices.map((idx) {
+    final ageRowsWithForecastDollars = firstLinePoints.indices.map((idx) {
       final age = firstLinePoints[idx].x.floor().toString();
-      final Iterable<String> lineValues = horizontalLines.map(
-        (lb) => lb.dataPoints[idx].y.asCompactDollars(),
+      final Iterable<String> lineValues = forecastLines.map(
+        (forecastLine) => forecastLine.dataPoints[idx].y.asCompactDollars(),
       );
       final List<DataCell> dataCells = [age]
           .followedBy(lineValues)
@@ -176,7 +176,7 @@ class _ForecastTableCardState() extends UnderChartCardState<ForecastTableCard> {
     }).toList();
 
     final List<DataColumn> columns = ['Age']
-        .followedBy(horizontalLines.map((line) => line.name))
+        .followedBy(forecastLines.map((line) => line.name))
         .map(
           (lineName) => DataColumn(
             label: Text(
@@ -201,7 +201,7 @@ class _ForecastTableCardState() extends UnderChartCardState<ForecastTableCard> {
             columnSpacing: 12,
             dividerThickness: 1,
             columns: columns,
-            rows: linesTransposedIntoRows,
+            rows: ageRowsWithForecastDollars,
           ),
         ),
       ),
@@ -210,6 +210,6 @@ class _ForecastTableCardState() extends UnderChartCardState<ForecastTableCard> {
 
   @override
   Widget title(BuildContext context) {
-    return titleStyle(context, 'Forecast (table)');
+    return cardTitle(context, 'Forecast (table)');
   }
 }

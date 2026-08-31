@@ -2,25 +2,24 @@ import 'package:budget_for_retirement/model/financial_simulation.dart';
 import 'package:budget_for_retirement/theme/app_colors.dart';
 import 'package:budget_for_retirement/theme/theme_notifier.dart';
 import 'package:budget_for_retirement/widgets/sliders/slider_insights.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'sliders_list_view.dart';
 
-class const Sliders({final bool showInsightsOverlay = false})
+class const Sliders({final bool showSliderInsights = false})
     extends StatefulWidget {
   @override
   State<Sliders> createState() => _SlidersState();
 }
 
 class _SlidersState() extends State<Sliders> {
-  late bool _showInsightsOverlay;
+  late bool _showSliderInsights;
 
   @override
   void initState() {
     super.initState();
-    _showInsightsOverlay = widget.showInsightsOverlay;
+    _showSliderInsights = widget.showSliderInsights;
   }
 
   static const double headerHeight = 58;
@@ -33,7 +32,7 @@ class _SlidersState() extends State<Sliders> {
     final double listTopPadding =
         safeAreaTop +
         headerHeight +
-        (_showInsightsOverlay ? insightsTopOffset + insightsHeight : 0);
+        (_showSliderInsights ? insightsTopOffset + insightsHeight : 0);
     final colors = AppColors.of(context);
 
     return Container(
@@ -42,9 +41,9 @@ class _SlidersState() extends State<Sliders> {
       child: Stack(
         children: [
           _slidersListView(listTopPadding),
-          if (_showInsightsOverlay) _insightsOverlay(context, safeAreaTop),
+          if (_showSliderInsights) _sliderInsights(context, safeAreaTop),
           _header(context, safeAreaTop),
-          if (safeAreaTop > 0) _safeAreaGradient(context, safeAreaTop),
+          if (safeAreaTop > 0) _statusBarHealthFade(context, safeAreaTop),
         ],
       ),
     );
@@ -59,7 +58,7 @@ class _SlidersState() extends State<Sliders> {
     );
   }
 
-  Widget _insightsOverlay(BuildContext context, double safeAreaTop) {
+  Widget _sliderInsights(BuildContext context, double safeAreaTop) {
     return Positioned(
       top: headerHeight + safeAreaTop + insightsTopOffset,
       left: 16,
@@ -110,7 +109,7 @@ class _SlidersState() extends State<Sliders> {
     final themeNotifier = context.watch<ThemeNotifier>();
     final isDark = themeNotifier.isDark;
     return _HeaderButton(
-      icon: isDark ? CupertinoIcons.sun_max_fill : CupertinoIcons.moon_fill,
+      icon: isDark ? Icons.light_mode : Icons.dark_mode,
       label: 'theme',
       onPressed: () => themeNotifier.toggle(),
     );
@@ -118,13 +117,13 @@ class _SlidersState() extends State<Sliders> {
 
   Widget _resetButton(BuildContext context) {
     return _HeaderButton(
-      icon: CupertinoIcons.arrow_counterclockwise,
+      icon: Icons.refresh,
       label: 'reset',
       onPressed: () => FinancialSimulation.dontWatch(context).reset(),
     );
   }
 
-  Widget _safeAreaGradient(BuildContext context, double safeAreaTop) {
+  Widget _statusBarHealthFade(BuildContext context, double safeAreaTop) {
     final colors = AppColors.of(context);
     final simulation = FinancialSimulation.watchFrom(context);
 
@@ -182,10 +181,13 @@ class const _HeaderButton({
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      minSize: 0,
+    return TextButton(
       onPressed: onPressed,
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.zero,
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

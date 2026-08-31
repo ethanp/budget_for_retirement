@@ -1,5 +1,5 @@
 import 'package:budget_for_retirement/theme/app_colors.dart';
-import 'package:budget_for_retirement/widgets/line_chart/financial_line_chart.dart';
+import 'package:budget_for_retirement/widgets/line_chart/forecast_chart.dart';
 import 'package:budget_for_retirement/widgets/under_chart_cards/housing_card.dart';
 import 'package:budget_for_retirement/widgets/under_chart_cards/under_chart_cards.dart';
 import 'package:ethan_ui/ethan_ui.dart';
@@ -17,7 +17,7 @@ const _mainTabs = <MainTab>[
   MainTab(
     icon: Icons.tune,
     label: 'Sliders',
-    screen: Sliders(showInsightsOverlay: true),
+    screen: Sliders(showSliderInsights: true),
   ),
   MainTab(icon: Icons.bar_chart, label: 'Chart', screen: _ChartTab()),
   MainTab(icon: Icons.view_list, label: 'Details', screen: _DetailsTab()),
@@ -79,7 +79,7 @@ class const _ChartTab() extends StatelessWidget {
       color: colors.backgroundDepth1,
       child: const Padding(
         padding: EdgeInsets.all(1),
-        child: FinancialLineChart(),
+        child: ForecastChart(),
       ),
     );
   }
@@ -96,7 +96,7 @@ class const _DetailsTab() extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [LifespanCard(), MinRetirementCard(), FinalGrossCard()],
+              children: [LifespanCard(), MinRetirementCard(), NetWorthAt95Card()],
             ),
             HousingCard(),
             ForecastTableCard(),

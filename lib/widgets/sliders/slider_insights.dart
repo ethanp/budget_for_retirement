@@ -8,9 +8,9 @@ class const SliderInsights() extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
     final simulation = FinancialSimulation.watchFrom(context);
-    final minRetirementData = buildMinRetirementInsightData(simulation);
-    final netWorthData = buildNetWorthInsightData(simulation);
-    final netWorthAt45Data = buildNetWorthAtAge45InsightData(simulation);
+    final minRetirementData = MinRetirementInsightData.ageOrNever(simulation);
+    final netWorthData = NetWorthInsightData.at95(simulation);
+    final netWorthAt45Data = NetWorthInsightData.at45(simulation);
 
     return Container(
       decoration: BoxDecoration(

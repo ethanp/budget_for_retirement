@@ -13,11 +13,11 @@ class Earnings() {
   /// * For an eligible retiree, it includes Social Security payments.
   double annualThisYear(LifeEvents lifeEvents) {
     return lifeEvents.isRetired
-        ? _retirementIncome(lifeEvents)
-        : _salaryIncome(lifeEvents);
+        ? _conservativeSocialSecurityFrom62(lifeEvents)
+        : _salaryGrownThreePercentCappedAt120(lifeEvents);
   }
 
-  double _salaryIncome(LifeEvents lifeEvents) {
+  double _salaryGrownThreePercentCappedAt120(LifeEvents lifeEvents) {
     final currentJob = lifeEvents.currentJob;
     final yearsAtThisJob = lifeEvents.currentAge - currentJob.age.now;
     final startingSalary = currentJob.salary.now;
@@ -27,7 +27,7 @@ class Earnings() {
     return math.min(rawProjectedSalary, maxJobSalary);
   }
 
-  double _retirementIncome(LifeEvents lifeEvents) {
+  double _conservativeSocialSecurityFrom62(LifeEvents lifeEvents) {
     // The later you start to pull SocSec, the more they pay. But we use the
     // minimum current payout to be conservative since many believe the govt
     // will reduce the benefits before I get to take part.

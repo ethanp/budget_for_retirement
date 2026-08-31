@@ -6,80 +6,66 @@ class const MinRetirementInsightData({
   required final String displayValue,
   required final Color color,
   required final bool canRetire,
-});
+}) {
+  factory ageOrNever(FinancialSimulation simulation) {
+    final int minRetirementAge = simulation.findMinRetirementAge();
+    final int endAge = simulation.sliderPositions.endAge.now;
+    final bool canStopWorking = minRetirementAge < endAge;
+    return MinRetirementInsightData(
+      displayValue: canStopWorking ? '$minRetirementAge' : 'Never',
+      color: canStopWorking ? _successColor : _dangerColor,
+      canRetire: canStopWorking,
+    );
+  }
+}
 
 class const NetWorthInsightData({
   required final String displayValue,
   required final Color color,
   required final bool hasPositiveNetWorth,
   required final double value,
-});
-
-// Colors that work well in both light and dark themes
-const _successColor = Color(0xFF00A896);
-const _dangerColor = Color(0xFFE57373);
-const _neutralColor = Color(0xFF78909C);
-
-MinRetirementInsightData buildMinRetirementInsightData(
-  FinancialSimulation simulation,
-) {
-  final int minRetirementAge = simulation.findMinRetirementAge();
-  final int endAge = simulation.sliderPositions.endAge.now;
-  final bool canStopWorking = minRetirementAge < endAge;
-  final String text = canStopWorking ? '$minRetirementAge' : 'Never';
-  final Color color = canStopWorking ? _successColor : _dangerColor;
-
-  return MinRetirementInsightData(
-    displayValue: text,
-    color: color,
-    canRetire: canStopWorking,
-  );
-}
-
-NetWorthInsightData buildNetWorthInsightData(FinancialSimulation simulation) {
-  final double finalSavings =
-      simulation.latestData.netSavings.dataPoints.last.y;
-  final bool endWithSavings = finalSavings >= 0;
-  final Color color = endWithSavings ? _successColor : _dangerColor;
-  final String finalCurrency = finalSavings.asCompactDollars();
-
-  return NetWorthInsightData(
-    displayValue: finalCurrency,
-    color: color,
-    hasPositiveNetWorth: endWithSavings,
-    value: finalSavings,
-  );
-}
-
-NetWorthInsightData buildNetWorthAtAge45InsightData(
-  FinancialSimulation simulation,
-) {
-  final startingAge = simulation.sliderPositions.simulationStartingAge.now;
-  final targetAge = 45.0;
-
-  if (targetAge < startingAge) {
+}) {
+  factory at95(FinancialSimulation simulation) {
+    final double finalSavings =
+        simulation.forecastLines.netWorth.dataPoints.last.y;
+    final bool endWithSavings = finalSavings >= 0;
     return NetWorthInsightData(
-      displayValue: 'N/A',
-      color: _neutralColor,
-      hasPositiveNetWorth: false,
-      value: 0,
+      displayValue: finalSavings.asCompactDollars(),
+      color: endWithSavings ? _successColor : _dangerColor,
+      hasPositiveNetWorth: endWithSavings,
+      value: finalSavings,
     );
   }
 
-  final dataPoint = simulation.latestData.netSavings.dataPoints.firstWhere(
-    (point) => point.x == targetAge,
-    orElse: () => simulation.latestData.netSavings.dataPoints.last,
-  );
+  factory at45(FinancialSimulation simulation) {
+    final startingAge = simulation.sliderPositions.simulationStartingAge.now;
+    final targetAge = 45.0;
 
-  final double netWorth = dataPoint.y;
-  final bool isPositive = netWorth >= 0;
-  final Color color = isPositive ? _successColor : _dangerColor;
-  final String displayCurrency = netWorth.asCompactDollars();
+    if (targetAge < startingAge) {
+      return NetWorthInsightData(
+        displayValue: 'N/A',
+        color: _neutralColor,
+        hasPositiveNetWorth: false,
+        value: 0,
+      );
+    }
 
-  return NetWorthInsightData(
-    displayValue: displayCurrency,
-    color: color,
-    hasPositiveNetWorth: isPositive,
-    value: netWorth,
-  );
+    final dataPoint = simulation.forecastLines.netWorth.dataPoints.firstWhere(
+      (point) => point.x == targetAge,
+      orElse: () => simulation.forecastLines.netWorth.dataPoints.last,
+    );
+
+    final double netWorth = dataPoint.y;
+    final bool isPositive = netWorth >= 0;
+    return NetWorthInsightData(
+      displayValue: netWorth.asCompactDollars(),
+      color: isPositive ? _successColor : _dangerColor,
+      hasPositiveNetWorth: isPositive,
+      value: netWorth,
+    );
+  }
 }
+
+const _successColor = Color(0xFF00A896);
+const _dangerColor = Color(0xFFE57373);
+const _neutralColor = Color(0xFF78909C);

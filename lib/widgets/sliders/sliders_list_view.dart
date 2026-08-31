@@ -46,7 +46,7 @@ class SlidersListView() extends StatelessWidget {
       title: 'Career',
       children: [
         ...jobs,
-        _ThemedCard(
+        _SliderCard(
           child: Column(
             children: [
               // Age at retirement has special handling (minimum valid value)
@@ -146,7 +146,7 @@ class SlidersListView() extends StatelessWidget {
   }
 }
 
-class const _ThemedCard({required final Widget child}) extends StatelessWidget {
+class const _SliderCard({required final Widget child}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -290,7 +290,7 @@ class const _Jobs(
     );
     return Column(
       children: [
-        _ThemedCard(
+        _SliderCard(
           child: Column(
             children: [
               _topRow(context, simulationParams),
@@ -305,7 +305,7 @@ class const _Jobs(
   }
 
   Widget _addButton(BuildContext context, SimulationParams simulationParams) {
-    return _Button.pipedAdd(
+    return _Button.addWithConnectors(
       context: context,
       suffix: 'job',
       onPressed: () {
@@ -427,7 +427,7 @@ class const _ResidenceSlider(
       ParamRegistry.residenceAppreciation,
       residence.housingAppreciateRate,
     );
-    final Widget addResidenceButton = _Button.pipedAdd(
+    final Widget addResidenceButton = _Button.addWithConnectors(
       context: context,
       suffix: 'residence',
       onPressed: () {
@@ -437,7 +437,7 @@ class const _ResidenceSlider(
         }
       },
     );
-    final Widget residenceSliders = _ThemedCard(
+    final Widget residenceSliders = _SliderCard(
       child: Column(
         children: [
           topRow,
@@ -475,13 +475,13 @@ Widget _lifetimeSlider(
 }
 
 class _Button() {
-  static Widget pipedAdd({
+  static Widget addWithConnectors({
     required BuildContext context,
     required String suffix,
     required VoidCallback onPressed,
   }) {
     final colors = AppColors.of(context);
-    return _piped(
+    return _betweenConnectors(
       context,
       _button(
         context: context,
@@ -507,7 +507,7 @@ class _Button() {
     );
   }
 
-  static Widget _pipeLine(BuildContext context) {
+  static Widget _connectorBar(BuildContext context) {
     final colors = AppColors.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
@@ -538,8 +538,8 @@ class _Button() {
     );
   }
 
-  static Widget _piped(BuildContext context, Widget w) =>
-      Column(children: [_pipeLine(context), w, _pipeLine(context)]);
+  static Widget _betweenConnectors(BuildContext context, Widget w) =>
+      Column(children: [_connectorBar(context), w, _connectorBar(context)]);
 
   static Widget _button({
     required BuildContext context,

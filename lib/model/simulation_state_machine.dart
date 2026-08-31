@@ -103,24 +103,27 @@ class SimulationStateMachine._({
     // Now add the Traditional contribution (it was already deducted pre-tax).
     traditionalRetirement.grossValue += traditionalContribution;
 
-    void spendToDebt(double amtSpent) {
-      final remaining = _spendMoney(incomeRemaining, amtSpent);
+    void chargeUncoveredToDebt(double amtSpent) {
+      final remaining = _withdrawInTaxEfficientOrder(incomeRemaining, amtSpent);
       incomeRemaining = remaining.incomeRemaining;
       nonMortgageDebt.grossValue += remaining.stillOwed;
     }
 
     final nonHousingExpenses = spending.expensesThisYear(lifeEvents, economy);
     assert(nonHousingExpenses >= 0);
-    spendToDebt(nonHousingExpenses);
+    chargeUncoveredToDebt(nonHousingExpenses);
 
     final housingExpenses = residences.costsThisYear(lifeEvents);
     if (housingExpenses < 0) {
       taxableInvestments.grossValue -= housingExpenses;
     } else {
-      spendToDebt(housingExpenses);
+      chargeUncoveredToDebt(housingExpenses);
     }
 
-    final remaining = _spendMoney(incomeRemaining, nonMortgageDebt.grossValue);
+    final remaining = _withdrawInTaxEfficientOrder(
+      incomeRemaining,
+      nonMortgageDebt.grossValue,
+    );
     incomeRemaining = remaining.incomeRemaining;
     nonMortgageDebt.grossValue = remaining.stillOwed;
 
@@ -151,11 +154,10 @@ class SimulationStateMachine._({
     }
   }
 
-  /// Tax-efficient withdrawal order:
-  /// 1. Taxable accounts first (preserves tax-advantaged growth)
-  /// 2. Traditional accounts second (required by RMDs eventually)
-  /// 3. Roth accounts last (let tax-free growth continue longest)
-  RemainingMoney _spendMoney(double salaryRemaining, double debtRemaining) {
+  UnspentAndStillOwed _withdrawInTaxEfficientOrder(
+    double salaryRemaining,
+    double debtRemaining,
+  ) {
     final isEarlyWithdrawal = lifeEvents.currentAge < 59;
 
     // 1. Spend using salary first.
@@ -212,11 +214,11 @@ class SimulationStateMachine._({
       debtRemaining -= smaller;
     }
 
-    return RemainingMoney(salaryRemaining, debtRemaining);
+    return UnspentAndStillOwed(salaryRemaining, debtRemaining);
   }
 }
 
-class const RemainingMoney(
+class const UnspentAndStillOwed(
   final double incomeRemaining,
   final double stillOwed,
 );

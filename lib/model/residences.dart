@@ -46,7 +46,7 @@ class const Residences({
     }
 
     final annualOutlay = currentHome.isRental
-        ? _appreciated(
+        ? _rentGrownWithHousingAppreciation(
             currentHome.monthlyRent * 12,
             lifeEvents.yearsSinceStart,
             currentHome.housingAppreciateRate,
@@ -74,8 +74,7 @@ class const Residences({
     return housingExpenses;
   }
 
-  /// "Real" appreciation.
-  double _appreciated(
+  double _rentGrownWithHousingAppreciation(
     double startVal,
     int numYears,
     Percent appreciationRate,
