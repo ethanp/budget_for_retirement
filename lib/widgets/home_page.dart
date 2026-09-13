@@ -92,6 +92,7 @@ class const _DetailsTab() extends StatelessWidget {
     return ColoredBox(
       color: colors.backgroundDepth1,
       child: SingleChildScrollView(
+        padding: EdgeInsets.zero.withOverlaidTabBar(context),
         child: Column(
           children: [
             Row(
