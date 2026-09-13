@@ -2,6 +2,10 @@
 
 Budget for Retirement
 
+### Screenshots
+
+![Homescreen](screenshots/homescreen.png)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
