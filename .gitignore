@@ -46,3 +46,6 @@ app.*.map.json
 # Local phone_deploy / deploy.rb fingerprints
 .deploy_hash
 .deploy_*_hash
+
+# Golden comparison leftovers
+test/failures/
